@@ -35,3 +35,19 @@
 (display (filter-in symbol? '(a (b c) 17 foo)))
 (display "\n\nLlamada #3\nEntrada        : (a b u univalle racket flp 28 90 (1 2 3))\nSalida esperada: (univalle racket flp)\nResultado      : ")
 (display (filter-in string? '(a b u "univalle" "racket" "flp" 28 90 (1 2 3))))
+
+(define (list-index p l)
+  (define (aux l n)
+    (if (null? l)
+        #f
+        (if (p (car l))
+            n
+            (aux (cdr l) (+ n 1)))))
+  (aux l 0))
+
+(display "\n\nPunto #5\n\nLlamada #1\nEntrada        : (a 2 (1 3) b 7)\nSalida esperada: 1\nResultado      : ")
+(display (list-index number? '(a 2 (1 3) b 7)))
+(display "\n\nLlamada #2\nEntrada        : (a (b c) 17 foo)\nSalida esperada: 0\nResultado      : ")
+(display (list-index symbol? '(a (b c) 17 foo)))
+(display "\n\nLlamada #3\nEntrada        : (1 2 (a b) 3)\nSalida esperada: #f\nResultado      : ")
+(display (list-index symbol? '(1 2 (a b) 3)))
