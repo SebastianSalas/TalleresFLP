@@ -2,12 +2,17 @@
 
 (define suma (lambda (x y) (+ x y)))
 
-;;Punto 1
+;; Punto 1
+;; invert :
+;; Proposito:
+;; L x P -> L' : Procedimiento que invierte las tuplas de una lista L y devuelve otra lista L'
+;; aplicandole el predicado P
+;;
 
 (define multiplo5? (lambda (x) (if(eqv? (modulo x 5) 0)
                                   #t
                                   #f)))
-                                  
+
 (define invert-aux
   (lambda(l)
     (cond
@@ -27,6 +32,11 @@
     )
   )
 )
+
+;; Pruebas
+(invert '((3 2) (4 2) (1 5) (2 8)) even?)
+(invert '((5 9) (10 90) (82 7) ) multiplo5? )
+(invert '((6 9) (10 90) (82 7) ) odd? )
 
 (define down
   (lambda (l)
