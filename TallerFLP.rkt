@@ -51,3 +51,20 @@
 (display (list-index symbol? '(a (b c) 17 foo)))
 (display "\n\nLlamada #3\nEntrada        : (1 2 (a b) 3)\nSalida esperada: #f\nResultado      : ")
 (display (list-index symbol? '(1 2 (a b) 3)))
+
+(define (swapper e1 e2 l)
+  (if (null? l)
+      '()
+      (cons (if (equal? e1 (car l))
+                e2
+                (if (equal? e2 (car l))
+                    e1
+                    (car l)))
+            (swapper e1 e2 (cdr l)))) )
+
+(display "\n\nPunto #6\n\nLlamada #1\nEntrada        : 'a 'd '(a b c d)\nSalida esperada: (d b c a)\nResultado      : ")
+(display (swapper 'a 'd '(a b c d)))
+(display "\n\nLlamada #2\nEntrada        : 'a 'd '(a d () c d)\nSalida esperada: (d a () c a)\nResultado      : ")
+(display (swapper 'a 'd '(a d () c d)))
+(display "\n\nLlamada #3\nEntrada        : 'x 'y '(y y x y x y x x y)\nSalida esperada: (x x y x y x y y x)\nResultado      : ")
+(display (swapper 'x 'y '(y y x y x y x x y)))
