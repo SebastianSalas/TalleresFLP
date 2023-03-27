@@ -3,6 +3,11 @@
 (define suma (lambda (x y) (+ x y)))
 
 ;;Punto 1
+
+(define multiplo5? (lambda (x) (if(eqv? (modulo x 5) 0)
+                                  #t
+                                  #f)))
+                                  
 (define invert-aux
   (lambda(l)
     (cond
