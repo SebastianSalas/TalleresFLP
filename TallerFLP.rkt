@@ -84,3 +84,15 @@
 (display (cartesian-product '(a b c) '(x y)))
 (display "\n\nLlamada #2\nEntrada        : '(p q r) '(5 6 7)\nSalida esperada: ((p 5) (p 6) (p 7) (q 5) (q 6) (q 7) (r 5) (r 6) (r 7))\nResultado      : ")
 (display (cartesian-product '(p q r) '(5 6 7)))
+
+(define (up l)
+  (if (null? l)
+      '()
+      (if (list? (car l))
+          (append (car l) (up (cdr l)))
+          (cons (car l) (up (cdr l))))))
+
+(display "\n\nPunto #10\n\nLlamada #1\nEntrada        : '((1 2) (3 4))\nSalida esperada: (1 2 3 4)\nResultado      : ")
+(display (up '((1 2) (3 4))))
+(display "\n\nLlamada #2\nEntrada        : '((x (y)) z)\nSalida esperada: (x (y) z)\nResultado      : ")
+(display (up '((x (y)) z)))
