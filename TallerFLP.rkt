@@ -68,3 +68,19 @@
 (display (swapper 'a 'd '(a d () c d)))
 (display "\n\nLlamada #3\nEntrada        : 'x 'y '(y y x y x y x x y)\nSalida esperada: (x x y x y x y y x)\nResultado      : ")
 (display (swapper 'x 'y '(y y x y x y x x y)))
+
+(define (cartesian-product l1 l2)
+  (cond ((null? l1) '())
+        ((null? l2) '())
+        (else (append (aux (car l1) l2)
+                      (cartesian-product (cdr l1) l2)))))
+
+(define (aux x l)
+  (cond ((null? l) '())
+        (else (cons (list x (car l))
+                    (aux x (cdr l))))))
+
+(display "\n\nPunto #7\n\nLlamada #1\nEntrada        : '(a b c) '(x y)\nSalida esperada: ((a x) (a y) (b x) (b y) (c x) (c y))\nResultado      : ")
+(display (cartesian-product '(a b c) '(x y)))
+(display "\n\nLlamada #2\nEntrada        : '(p q r) '(5 6 7)\nSalida esperada: ((p 5) (p 6) (p 7) (q 5) (q 6) (q 7) (r 5) (r 6) (r 7))\nResultado      : ")
+(display (cartesian-product '(p q r) '(5 6 7)))
