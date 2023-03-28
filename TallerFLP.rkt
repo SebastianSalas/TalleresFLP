@@ -126,3 +126,14 @@
 (display (up '((1 2) (3 4))))
 (display "\n\nLlamada #2\nEntrada        : '((x (y)) z)\nSalida esperada: (x (y) z)\nResultado      : ")
 (display (up '((x (y)) z)))
+
+(define zip
+  (lambda (f lst1 lst2)
+    (cond
+      [(eqv? lst1 '()) empty]
+      [(eqv? lst2 '()) empty]
+      [else (cons(f (car lst1) (car lst2))(zip f (cdr lst1)(cdr lst2)))])))
+(display "\n\nPunto #11\n\nLlamada #1\nEntrada        : (zip + '(1 4) '(6 2))\nSalida esperada: (7 6)\nResultado      : ")
+(display (zip + '(1 4) '(6 2)))
+(display "\n\nLlamada #2\nEntrada        : (zip * ’(11 5 6) ’(10 9 8))\nSalida esperada: (110 45 48)\nResultado      : ")
+(display  (zip * '(11 5 6) '(10 9 8)))
