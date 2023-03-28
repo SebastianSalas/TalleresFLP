@@ -133,7 +133,20 @@
       [(eqv? lst1 '()) empty]
       [(eqv? lst2 '()) empty]
       [else (cons(f (car lst1) (car lst2))(zip f (cdr lst1)(cdr lst2)))])))
+
 (display "\n\nPunto #11\n\nLlamada #1\nEntrada        : (zip + '(1 4) '(6 2))\nSalida esperada: (7 6)\nResultado      : ")
 (display (zip + '(1 4) '(6 2)))
 (display "\n\nLlamada #2\nEntrada        : (zip * ’(11 5 6) ’(10 9 8))\nSalida esperada: (110 45 48)\nResultado      : ")
 (display  (zip * '(11 5 6) '(10 9 8)))
+
+(define filter-acum
+  (lambda (a b f acum filt)
+    (cond
+      [(> a b) acum]
+      [(filt a) (filter-acum (+ a 1) b f (f acum a) filt)]
+      [else (filter-acum (+ a 1) b f acum filt)])))
+(display "\n\nPunto #12\n\nLlamada #1\nEntrada        : (filter-acum 1 10 + 0 odd?)\nSalida esperada: 25 \nResultado      : ")
+(display (filter-acum 1 10 + 0 odd?))
+(display "\n\nLlamada #2\nEntrada        : (filter-acum 1 10 + 0 even?)\nSalida esperada: 30\nResultado      : ")
+(display  (filter-acum 1 10 + 0 even?))
+
