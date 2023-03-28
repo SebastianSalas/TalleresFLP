@@ -51,6 +51,39 @@
 (display "\n\nLlamada #3\nEntrada        : (un (objeto (mas)) complicado)\nSalida esperada: ((un) ((objeto (mas))) (complicado))\nResultado      : ")
 (display (down '(un (objeto (mas)) complicado)))
 
+;; Punto 3
+;; list-set : 
+;; Proposito:
+;;
+
+(define mayor5? (lambda (x) (if(x > 5)
+                            #t
+                            #f)))                      
+
+(define list-set
+  (lambda (lst n x p)
+    (letrec
+        (
+         (list-aux
+          (lambda (lstaux naux xaux acc)
+            (cond
+              [(eqv? lstaux '()) empty]
+              [(and(= acc naux) (p (car lstaux))) (cons xaux (list-aux (cdr lstaux) naux xaux (+ 1 acc)))]
+              [else (cons (car lstaux) (list-aux (cdr lstaux) naux xaux (+ 1 acc)))]
+              )
+            )
+          )
+         )
+      (list-aux lst n x 0))
+    )
+  )
+
+;; Pruebas
+(list-set '(5 8 7 6) 2 '(1 2) odd?)
+(list-set '(5 8 7 6) 2 '(1 2) even?)
+(list-set '(5 8 7 6) 3 '(1 5 10) mayor5? )
+(list-set '(5 8 7 6) 0 '(1 5 10) mayor5? ) 
+
 (define filter-in
   (lambda (p l)
     (if (null? l)
