@@ -160,4 +160,3 @@
 (display (operate (list + * + - *) '(1 2 8 4 11 6)))
 (display "\n\nLlamada #2\nEntrada        : (operate (list *) '(4 5))\nSalida esperada: 20\nResultado      : ")
 (display  (operate (list *) '(4 5)))
-
