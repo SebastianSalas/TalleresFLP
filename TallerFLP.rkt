@@ -56,7 +56,7 @@
 ;; Proposito:
 ;;
 
-(define mayor5? (lambda (x) (if(x > 5)
+(define mayor5? (lambda (x) (if(> x  5)
                             #t
                             #f)))                      
 
