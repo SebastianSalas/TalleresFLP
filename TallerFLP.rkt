@@ -150,3 +150,14 @@
 (display "\n\nLlamada #2\nEntrada        : (filter-acum 1 10 + 0 even?)\nSalida esperada: 30\nResultado      : ")
 (display  (filter-acum 1 10 + 0 even?))
 
+(define operate
+  (lambda (lrators lrands)
+    (cond
+      [(null? lrators) (car lrands)]
+      [else (operate (cdr lrators) (cons (apply (car lrators) (list (car lrands) (cadr lrands))) (cddr lrands)))])))
+
+(display "\n\nPunto #13\n\nLlamada #1\nEntrada        : (operate (list + * + - *) '(1 2 8 4 11 6))\nSalida esperada: 102 \nResultado      : ")
+(display (operate (list + * + - *) '(1 2 8 4 11 6)))
+(display "\n\nLlamada #2\nEntrada        : (operate (list *) '(4 5))\nSalida esperada: 20\nResultado      : ")
+(display  (operate (list *) '(4 5)))
+
