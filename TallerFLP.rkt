@@ -155,6 +155,34 @@
           (append (car l) (up (cdr l)))
           (cons (car l) (up (cdr l))))))
 
+(define mapping
+  (lambda (f l1 l2)
+    (cond
+      [(or (null? l1) (null? l2)) '()]
+      [(equal? (f (car l1)) (car l2))
+       (cons (list (car l1) (car l2))
+             (mapping f (cdr l1) (cdr l2)))]
+      [else (mapping f (cdr l1) (cdr l2))])))
+
+(define (mapping-filtered func L1 L2)
+  (define (aux F L1 L2 prev)
+    (cond
+      [(or (null? L1) (null? L2)) '()]
+      [(equal? (F (car L1)) (car L2))
+       (if (equal? prev (car L2))
+           (aux F (cdr L1) (cdr L2) prev)
+           (cons (list (car L1) (car L2))
+                 (aux F (cdr L1) (cdr L2) (car L2))))] 
+      [else (aux F (cdr L1) (cdr L2) prev)]))
+  
+  (aux func L1 L2))
+(display "\n\nPunto #8\n\nLlamada #1\nEntrada        : (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 2 4 6))\nSalida esperada: ((1 2) (2 4) (3 6))\nResultado      : ")
+(display (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 2 4 6)))
+(display "\n\nLlamada #2\nEntrada        :  (mapping (lambda (d) (* d 3)) (list 1 2 2) (list 2 4 6))\nSalida esperada: ((2 6))\nResultado      : ")
+(display (mapping (lambda (d) (* d 3)) (list 1 2 2) (list 2 4 6)))
+(display "\n\nLlamada #3\nEntrada        :  (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12))\nSalida esperada: (())\nResultado      : ")
+(display (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12)))
+
 (display "\n\nPunto #10\n\nLlamada #1\nEntrada        : '((1 2) (3 4))\nSalida esperada: (1 2 3 4)\nResultado      : ")
 (display (up '((1 2) (3 4))))
 (display "\n\nLlamada #2\nEntrada        : '((x (y)) z)\nSalida esperada: (x (y) z)\nResultado      : ")
