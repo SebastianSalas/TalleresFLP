@@ -51,6 +51,39 @@
 (display "\n\nLlamada #3\nEntrada        : (un (objeto (mas)) complicado)\nSalida esperada: ((un) ((objeto (mas))) (complicado))\nResultado      : ")
 (display (down '(un (objeto (mas)) complicado)))
 
+;; Punto 3
+;; list-set : 
+;; Proposito:
+;;
+
+(define mayor5? (lambda (x) (if(> x  5)
+                            #t
+                            #f)))                      
+
+(define list-set
+  (lambda (lst n x p)
+    (letrec
+        (
+         (list-aux
+          (lambda (lstaux naux xaux acc)
+            (cond
+              [(eqv? lstaux '()) empty]
+              [(and(= acc naux) (p (car lstaux))) (cons xaux (list-aux (cdr lstaux) naux xaux (+ 1 acc)))]
+              [else (cons (car lstaux) (list-aux (cdr lstaux) naux xaux (+ 1 acc)))]
+              )
+            )
+          )
+         )
+      (list-aux lst n x 0))
+    )
+  )
+
+;; Pruebas
+(list-set '(5 8 7 6) 2 '(1 2) odd?)
+(list-set '(5 8 7 6) 2 '(1 2) even?)
+(list-set '(5 8 7 6) 3 '(1 5 10) mayor5? )
+(list-set '(5 8 7 6) 0 '(1 5 10) mayor5? ) 
+
 (define filter-in
   (lambda (p l)
     (if (null? l)
@@ -115,36 +148,6 @@
 (display "\n\nLlamada #2\nEntrada        : '(p q r) '(5 6 7)\nSalida esperada: ((p 5) (p 6) (p 7) (q 5) (q 6) (q 7) (r 5) (r 6) (r 7))\nResultado      : ")
 (display (cartesian-product '(p q r) '(5 6 7)))
 
-(define mapping
-  (lambda (f l1 l2)
-    (cond
-      [(or (null? l1) (null? l2)) '()]
-      [(equal? (f (car l1)) (car l2))
-       (cons (list (car l1) (car l2))
-             (mapping f (cdr l1) (cdr l2)))]
-      [else (mapping f (cdr l1) (cdr l2))])))
-
-(define (mapping-filtered func L1 L2)
-  (define (aux F L1 L2 prev)
-    (cond
-      [(or (null? L1) (null? L2)) '()]
-      [(equal? (F (car L1)) (car L2))
-       (if (equal? prev (car L2))
-           (aux F (cdr L1) (cdr L2) prev)
-           (cons (list (car L1) (car L2))
-                 (aux F (cdr L1) (cdr L2) (car L2))))] 
-      [else (aux F (cdr L1) (cdr L2) prev)]))
-  
-  (aux func L1 L2))
-(display "\n\nPunto #8\n\nLlamada #1\nEntrada        : (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 2 4 6))\nSalida esperada: ((1 2) (2 4) (3 6))\nResultado      : ")
-(display (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 2 4 6)))
-(display "\n\nLlamada #2\nEntrada        :  (mapping (lambda (d) (* d 3)) (list 1 2 2) (list 2 4 6))\nSalida esperada: ((2 6))\nResultado      : ")
-(display (mapping (lambda (d) (* d 3)) (list 1 2 2) (list 2 4 6)))
-(display "\n\nLlamada #3\nEntrada        :  (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12))\nSalida esperada: (())\nResultado      : ")
-(display (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12))
-)
-
-
 (define (up l)
   (if (null? l)
       '()
@@ -156,7 +159,6 @@
 (display (up '((1 2) (3 4))))
 (display "\n\nLlamada #2\nEntrada        : '((x (y)) z)\nSalida esperada: (x (y) z)\nResultado      : ")
 (display (up '((x (y)) z)))
-
 
 (define zip
   (lambda (f lst1 lst2)
