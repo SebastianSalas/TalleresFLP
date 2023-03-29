@@ -258,3 +258,21 @@
 (display (operate (list + * + - *) '(1 2 8 4 11 6)))
 (display "\n\nLlamada #2\nEntrada        : (operate (list *) '(4 5))\nSalida esperada: 20\nResultado      : ")
 (display  (operate (list *) '(4 5)))
+
+
+(define
+  (prod-scalar-matriz mat vec)
+  (cond
+    [(or (null? mat) (null? vec)) '()]
+    [else (cons (sum-prod (car mat) vec)(prod-scalar-matriz (cdr mat) vec))]))
+
+(define
+  (sum-prod fil vec)
+  (cond
+    [(or (null? fil) (null? vec)) '()]
+    [else (cons (* (car fil) (car vec))(sum-prod (cdr fil) (cdr vec)))]))
+
+(display "\n\nPunto #17\n\nLlamada #1\nEntrada        : (prod-scalar-matriz '((1 1) (2 2)) '(2 3))\nSalida esperada: ((2 3) (4 6)) \nResultado      : ")
+(display (prod-scalar-matriz '((1 1) (2 2)) '(2 3)))
+(display "\n\nLlamada #2\nEntrada        : (prod-scalar-matriz '((1 1) (2 2) (3 3)) '(2 3))\nSalida esperada: ((2 3) (4 6) (6 9))\nResultado      : ")
+(display  (prod-scalar-matriz '((1 1) (2 2) (3 3)) '(2 3)))
