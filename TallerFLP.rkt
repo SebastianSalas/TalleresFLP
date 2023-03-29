@@ -176,6 +176,41 @@
 (display "\n\nLlamada #3\nEntrada        :  (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12))\nSalida esperada: (())\nResultado      : ")
 (display (mapping (lambda (d) (* d 2)) (list 1 2 3) (list 3 9 12)))
 
+;; Punto 9
+;; inversions :
+;; Proposito:
+;;
+
+(define recorre-lista
+  (lambda (l head acum)
+    (cond
+      [(null? l) acum]
+      [(> head (car l)) (recorre-lista (cdr l) head (+ acum 1))]
+      [else (recorre-lista (cdr l) head acum )]
+    )
+  )
+)
+
+(define inversions
+  (lambda (l)
+    (letrec ((inversions-aux
+              (lambda (lista acum)
+                (cond
+                  [(null? lista) acum]
+                  [else (inversions-aux (cdr lista) (+ acum (recorre-lista (cdr lista) (car lista) 0)))]
+                )
+              )
+              )
+            )
+      (inversions-aux l 0)
+    )
+  )
+)
+
+;;Pruebas
+(inversions '(2 3 8 6 1)) ;; -> Retorna 5
+(inversions '(1 2 3 4)) ;; -> Retorna 0
+(inversions '(3 2 1)) ;; -> Retorna 3
 
 (define (up l)
   (if (null? l)
