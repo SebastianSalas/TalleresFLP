@@ -276,3 +276,24 @@
 (display (prod-scalar-matriz '((1 1) (2 2)) '(2 3)))
 (display "\n\nLlamada #2\nEntrada        : (prod-scalar-matriz '((1 1) (2 2) (3 3)) '(2 3))\nSalida esperada: ((2 3) (4 6) (6 9))\nResultado      : ")
 (display  (prod-scalar-matriz '((1 1) (2 2) (3 3)) '(2 3)))
+
+(define
+  (pascal n)
+  (cond
+    [(= n 1) '(1)]
+    [else (agregar-extremos (pascal (- n 1)))]))
+
+(define
+  (agregar-extremos lst-e)
+  (cons 1 (agregar-interiores lst-e)))
+
+(define
+  (agregar-interiores lst-i)
+  (cond
+    [(null? (cdr lst-i)) '(1)]
+    [else (cons (+ (car lst-i) (cadr lst-i)) (agregar-interiores (cdr lst-i)))]))
+
+(display "\n\nPunto #18\n\nLlamada #1\nEntrada        : (pascal 5)\nSalida esperada: (1 4 6 4 1) \nResultado      : ")
+(display (pascal 5))
+(display "\n\nLlamada #2\nEntrada        :  (pascal 1)\nSalida esperada: (1)\nResultado      : ")
+(display   (pascal 1))
