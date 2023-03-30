@@ -9,16 +9,27 @@
 
 ;; Inicio punto #1
 
-;; multiplo5?:
-;; Propósito:
-;;
-(define multiplo5? (lambda (x) (if(eqv? (modulo x 5) 0)
-                                  #t
-                                  #f)))
+;; Función multiplo5?:
+;; Propósito: Determinar si un número entero es múltiplo de 5 o no
+#| Gramática:
+<entero> ::= cualquier número entero
+<multiplo5> ::= (<entero>)
+|#
+(define multiplo5?
+  (lambda (x)
+    (if(eqv? (modulo x 5) 0)
+        #t
+        #f)))
 
-;; invert-aux: 
-;; Propósito:
-;;
+;; Función invert-aux
+;; Propósito: Toma una lista una lista de pares y devuelve una nueva lista donde el primer elemento de cada par, es el segundo elemento del par original, y el segundo elemento es el primer elemento del par original.
+#| Gramática:
+<lista-de-pares> ::= ()
+                 ::= (<par> <lista-de-pares>)
+<par> ::= (<elem1> <elem2>)
+<elem1> ::= cualquier elemento válido
+<elem2> ::= cualquier elemento válido
+|#
 (define invert-aux
   (lambda(l)
     (cond
@@ -27,9 +38,12 @@
     ))
 )
 
-;; invert:
+;; Función invert:
 ;; Propósito:
 ;; L x P -> L' : Procedimiento que invierte las tuplas de una lista L y devuelve otra lista L' aplicandole el predicado P
+#| Gramática:
+
+|#
 (define invert 
   (lambda(l p)
     (cond
@@ -43,9 +57,12 @@
 )
 
 ;; Pruebas punto #1
-(invert '((3 2) (4 2) (1 5) (2 8)) even?)
-(invert '((5 9) (10 90) (82 7) ) multiplo5? )
-(invert '((6 9) (10 90) (82 7) ) odd? )
+(display "\nPunto #1\n\nLlamada #1\nEntrada        : '((3 2) (4 2) (1 5) (2 8)) even?\nSalida esperada: ((2 4) (8 2))\nResultado      : ")
+(display (invert '((3 2) (4 2) (1 5) (2 8)) even?))
+(display "\n\nLlamada #2\nEntrada        : '((5 9) (10 90) (82 7) ) multiplo5?\nSalida esperada: ((90 10))\nResultado      : ")
+(display (invert '((5 9) (10 90) (82 7) ) multiplo5?))
+(display "\n\nLlamada #3\nEntrada        : '((6 9) (10 90) (82 7) ) odd?\nSalida esperada: ()\nResultado      : ")
+(display (invert '((6 9) (10 90) (82 7) ) odd?))
 
 ;; Fin punto #1
 
@@ -53,7 +70,9 @@
 
 ;; down: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define down
   (lambda (l)
     (if (null? l)
@@ -61,7 +80,7 @@
       (cons (cons  (car l) '()) (down (cdr l))))))
 
 ;; Pruebas punto #2
-(display "\nPunto #2\n\nLlamada #1\nEntrada        : (1 2 3)\nSalida esperada: ((1) (2) (3))\nResultado      : ")
+(display "\n\nPunto #2\n\nLlamada #1\nEntrada        : (1 2 3)\nSalida esperada: ((1) (2) (3))\nResultado      : ")
 (display (down '(1 2 3)))
 (display "\n\nLlamada #2\nEntrada        : ((una) (buena) (idea))\nSalida esperada: (((una)) ((buena)) ((idea)))\nResultado      : ")
 (display (down '((una) (buena) (idea))))
@@ -74,14 +93,18 @@
 
 ;; mayor5?: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define mayor5? (lambda (x) (if(> x  5)
                             #t
                             #f)))                      
 
 ;; list-set: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define list-set
   (lambda (lst n x p)
     (letrec
@@ -101,10 +124,14 @@
   )
 
 ;; Pruebas punto #3
-(list-set '(5 8 7 6) 2 '(1 2) odd?)
-(list-set '(5 8 7 6) 2 '(1 2) even?)
-(list-set '(5 8 7 6) 3 '(1 5 10) mayor5? )
-(list-set '(5 8 7 6) 0 '(1 5 10) mayor5? ) 
+(display "\n\nPunto #3\n\nLlamada #1\nEntrada        : '(5 8 7 6) 2 '(1 2) odd?\nSalida esperada: (5 8 (1 2) 6)\nResultado      : ")
+(display (list-set '(5 8 7 6) 2 '(1 2) odd?))
+(display "\n\nLlamada #2\nEntrada        : '(5 8 7 6) 2 '(1 2) even?\nSalida esperada: (5 8 7 6)\nResultado      : ")
+(display (list-set '(5 8 7 6) 2 '(1 2) even?))
+(display "\n\nLlamada #3\nEntrada        : '(5 8 7 6) 3 '(1 5 10) mayor5?\nSalida esperada: (5 8 7 (1 5 10))\nResultado      : ")
+(display (list-set '(5 8 7 6) 3 '(1 5 10) mayor5? ))
+(display "\n\nLlamada #4\nEntrada        : '(5 8 7 6) 0 '(1 5 10) mayor5?\nSalida esperada: (5 8 7 6)\nResultado      : ")
+(display (list-set '(5 8 7 6) 0 '(1 5 10) mayor5? ))
 
 ;; Fin punto #3
 
@@ -112,7 +139,9 @@
 
 ;; filter-in: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define filter-in
   (lambda (p l)
     (if (null? l)
@@ -135,7 +164,9 @@
 
 ;; list-index: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (list-index p l)
   (define (aux l n)
     (if (null? l)
@@ -159,7 +190,9 @@
 
 ;; swapper: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (swapper e1 e2 l)
   (if (null? l)
       '()
@@ -184,7 +217,9 @@
 
 ;; cartesian-product: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (cartesian-product l1 l2)
   (cond ((null? l1) '())
         ((null? l2) '())
@@ -193,7 +228,9 @@
 
 ;; aux: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (aux x l)
   (cond ((null? l) '())
         (else (cons (list x (car l))
@@ -211,7 +248,9 @@
 
 ;; mapping: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define mapping
   (lambda (f l1 l2)
     (cond
@@ -223,7 +262,9 @@
 
 ;; mapping-filtered: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (mapping-filtered func L1 L2)
   (define (aux F L1 L2 prev)
     (cond
@@ -250,7 +291,9 @@
 
 ;; recorre-lista: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define recorre-lista
   (lambda (l head acum)
     (cond
@@ -263,7 +306,9 @@
 
 ;; inversions:
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define inversions
   (lambda (l)
     (letrec ((inversions-aux
@@ -281,9 +326,12 @@
 )
 
 ;; Pruebas punto #9
-(inversions '(2 3 8 6 1)) ;; -> Retorna 5
-(inversions '(1 2 3 4)) ;; -> Retorna 0
-(inversions '(3 2 1)) ;; -> Retorna 3
+(display "\n\nPunto #9\n\nLlamada #1\nEntrada        : '(2 3 8 6 1)\nSalida esperada: 5\nResultado      : ")
+(display (inversions '(2 3 8 6 1)))
+(display "\n\nLlamada #2\nEntrada        : '(1 2 3 4)\nSalida esperada: 0\nResultado      : ")
+(display (inversions '(1 2 3 4)))
+(display "\n\nLlamada #3\nEntrada        : '(3 2 1))\nSalida esperada: 3\nResultado      : ")
+(display (inversions '(3 2 1)))
 
 ;; Fin punto #9
 
@@ -291,7 +339,9 @@
 
 ;; up: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (up l)
   (if (null? l)
       '()
@@ -311,7 +361,9 @@
 
 ;; zip: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define zip
   (lambda (f lst1 lst2)
     (cond
@@ -331,7 +383,9 @@
 
 ;; filter-acum: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define filter-acum
   (lambda (a b f acum filt)
     (cond
@@ -351,7 +405,9 @@
 
 ;; operate: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define operate
   (lambda (lrators lrands)
     (cond
@@ -380,7 +436,9 @@
 
 ;; count-odd-and-even: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define (count-odd-and-even arbol)
   (define (aux arbol)
     (cond
@@ -414,7 +472,9 @@
 
 ;; prod-scalar-matriz: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define
   (prod-scalar-matriz mat vec)
   (cond
@@ -423,7 +483,9 @@
 
 ;; sum-prod: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define
   (sum-prod fil vec)
   (cond
@@ -442,7 +504,9 @@
 
 ;; pascal: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define
   (pascal n)
   (cond
@@ -451,14 +515,18 @@
 
 ;; agregar-extremos: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define
   (agregar-extremos lst-e)
   (cons 1 (agregar-interiores lst-e)))
 
 ;; agregar-interiores: 
 ;; Propósito:
-;;
+#| Gramática:
+
+|#
 (define
   (agregar-interiores lst-i)
   (cond
