@@ -378,11 +378,25 @@
 
 ;; Inicio punto #15
 
-
+;; count-odd-and-even: 
+;; Propósito:
+;;
+(define (count-odd-and-even arbol)
+  (define (aux arbol)
+    (cond
+      [(null? arbol) '(0 0)]
+      [(not (list? arbol))
+       (if (even? arbol) '(1 0) '(0 1))]
+      [else
+       (let ([left-result (aux (car arbol))])
+         (let ([right-result (aux (cdr arbol))])
+           (list (+ (car left-result) (car right-result))
+                 (+ (cadr left-result) (cadr right-result)))))]))
+  (aux arbol))
 
 ;; Pruebas punto #15
-
-
+(display "\n\nPunto #15\n\nLlamada #1\nEntrada        : '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ())))\nSalida esperada: (4 3) \nResultado      : ")
+(display (count-odd-and-even '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ())))))
 
 ;; Fin punto #15
 
