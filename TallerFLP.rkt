@@ -424,11 +424,55 @@
 
 ;; Inicio punto #14
 
+;; Función hojas-der:
+;; Propósito: Recibe un árbol y devuelve las hojas derechas del árbol.
+#| Gramática:
+<árbol> ::= ()
+        ::= (<int> <arbol> <arbol>)
+|#
+(define hojas-der
+  (lambda (arbol)
+    (cadr(cdr arbol))))
 
+;; Función hojas-izq:
+;; Proposito: Recibe un árbol y devuelve las hojas izquierdas del árbol
+#| Gramáticas:
+<arbol> ::= ()
+        ::= (<int> <arbol> <arbol>)
+|#
+(define hojas-izq
+  (lambda (arbol)
+    (cadr arbol)))
+
+;; Función raiz:
+;; Propósito: Recibe un árbol y devuelve el nodo
+#| Gramáticas:
+<arbol> ::= ()
+        ::= (<int> <arbol> <arbol>)
+|#
+(define raiz
+  (lambda (arbol)
+    (car arbol)))
+
+;; Función path:
+;; Propósito: Recibe un árbol y un numero el cual se buscará dentro del arbol, después se devolverán los pasos para llegar al número en cuestión dentro del árbol
+#| Gramática:
+<arbol> ::= ()
+        ::= (<int> <arbol> <arbol>)
+<lista-string> ::= ()
+               ::= (<string> <lista-string>)
+|#
+(define path
+  (lambda (n arbol)
+    (cond
+        [(null? arbol) empty]
+        [(= (car arbol) n) empty] 
+        [(> (car arbol) n)(cons "left"(path n (hojas-izq arbol)))]
+        [else (cons "right"(path n (hojas-der arbol)))])))
 
 ;; Pruebas punto #14
-
-
+(display "\nPunto #14\n\nLlamada #1:\nEntrada        : (17 '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ()))))\nSalida esperada: (right left left)\nResultado      : ")
+(display (path 17 '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ())))))
 
 ;; Fin punto #14
 
