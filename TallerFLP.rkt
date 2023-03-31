@@ -471,7 +471,7 @@
         [else (cons "right"(path n (hojas-der arbol)))])))
 
 ;; Pruebas punto #14
-(display "\nPunto #14\n\nLlamada #1:\nEntrada        : (17 '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ()))))\nSalida esperada: (right left left)\nResultado      : ")
+(display "\n\nPunto #14\n\nLlamada #1:\nEntrada        : (17 '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ()))))\nSalida esperada: (right left left)\nResultado      : ")
 (display (path 17 '(14 (7 () (12 () ()))(26 (20 (17 () ())())(31 () ())))))
 
 ;; Fin punto #14
