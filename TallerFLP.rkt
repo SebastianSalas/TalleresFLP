@@ -259,10 +259,11 @@
 ;; Inicio punto #8
 
 ;; mapping: 
-;; Propósito:
+;; Propósito: comparar los elementos de l1 y l2 después de haber aplicado la función f a los elementos de l1
 #| Gramática:
-<mapping> ::= (<unary-function> <list1> <list2>)
-<unary-function> ::= (lambda (<variable>) <expression>)
+<mapping>  ::= (<funcion-unaria> <list1> <list2>)
+             ::= (lambda (<variable>) <expression>)
+
 
 |#
 (define mapping
@@ -275,11 +276,10 @@
       [else (mapping f (cdr l1) (cdr l2))])))
 
 ;; mapping-filtered: 
-;; Propósito:
+;; Propósito: aplica a los elementos de L1 y se comparan con los elementos correspondientes de L2
 #| Gramática:
-              <mapping-filtered> ::= (<unary-function> <list1> <list2>)
-              <unary-function> ::= <lambda-expression>
-              <aux> ::= (<unary-function> <list1> <list2> <int>)
+              <auxiliary-function> ::= (define (aux <funcion-unaria> <list1> <list2> <any>)
+                     ::= <list>
 |#
 (define (mapping-filtered func L1 L2)
   (define (aux F L1 L2 prev)
@@ -356,9 +356,11 @@
 ;; Inicio punto #10
 
 ;; up: 
-;; Propósito:
+;; Propósito: toma una lista l y devuelve una lista que es la concatenación de todas las sub-listas de l. Si l no contiene sub-listas, simplemente devuelve l.
 #| Gramática:
-
+<up>   ::= ( <list>)
+    <list> ::= '()
+           ::= <list>
 |#
 (define (up l)
   (if (null? l)
@@ -378,9 +380,10 @@
 ;; Inicio punto #11
 
 ;; zip: 
-;; Propósito:
+;; Propósito: crear una lista que combine los elementos de dos listas de entrada en una nueva lista, aplicando una función dada a cada par de elementos correspondientes. 
 #| Gramática:
-
+<zip> ::= (<funcion-binaria> <list1> <list2>)
+          ::= <list> 
 |#
 (define zip
   (lambda (f lst1 lst2)
@@ -400,9 +403,10 @@
 ;; Inicio punto #12
 
 ;; filter-acum: 
-;; Propósito:
+;; Propósito:aplicar una función f a una acumulación inicial acum y a cada elemento a dentro del rango [a, b] que satisfaga una condición filt. 
 #| Gramática:
-
+<filter-acum>     ::= (<num1> <num2> <function> <acum> <filt>)
+    <filter-function> ::= <list>
 |#
 (define filter-acum
   (lambda (a b f acum filt)
@@ -422,9 +426,12 @@
 ;; Inicio punto #13
 
 ;; operate: 
-;; Propósito:
+;; Propósito: realiza la operación matemática indicada por una lista de operadores en el primer parámetro (lrators) sobre una lista de operandos en el segundo parámetro (lrands).
 #| Gramática:
-
+<operate> ::= (<lrators> <lrands>)
+<lrators> ::= (<operators>) 
+<lrands>  ::= (<numbers>)
+          ::= <list>
 |#
 (define operate
   (lambda (lrators lrands)
@@ -497,7 +504,7 @@
 ;; Inicio punto #15
 
 ;; count-odd-and-even: 
-;; Propósito:
+;; Propósito: contar la cantidad de números pares e impares en un árbol, representado como una lista anidada de números.
 #| Gramática:
   <arbol> ::= <valor>
           ::= (<arbol> . <arbol>)
@@ -528,6 +535,8 @@
 
 ;; Función suma-simpson:
 ;; Propósito: Procedimiento auxiliar que calcula todos los términos de la sumatoria de Simpson a excepción del primer y último término, devuelve el resultado de los términos que calcula.
+;; Gramatica: <suma-simpson> ::= (<funcion-unaria> <a> <h> <n>)
+;;                           ::= <lambda-expression>
 (define suma-simpson
   (lambda(f a h n)
     (cond
@@ -537,12 +546,16 @@
 
 ;; Función suma-aux:
 ;; Propósito: Procedimiento auxiliar que calcula los valores del primer y último término de la sumatoria de Simpson, devuelve la suma de todos los términos de la suma
+;; Gramatica: <suma-aux> ::= (<funcion-unaria> <number> <number> <number>)
+;;                       ::= <lambda-expression>
 (define suma-aux
   (lambda(f a h n)
     (+ (f a) (f (+ a (* n h))) (suma-simpson f a h n))))
 
 ;; Función simpson-rule:
 ;; Propósito: Procedimiento que calcula la integral de una función F entre los límites A y B siguiendo la regla de Simpson con el entero par N y retorna la integral R
+;; Gramatica: <simpson-rule> ::= (<funcion-unaria> <number> <number> <number>)
+;;                           ::= <int>
 (define simpson-rule
            (lambda(f a b n)
               (let ((h (/ (- b a) n)))
@@ -559,9 +572,10 @@
 ;; Inicio punto #17
 
 ;; prod-scalar-matriz: 
-;; Propósito:
+;; Propósito:calcular el producto escalar entre una matriz y un vector. 
 #| Gramática:
-
+<prod-scalar-matriz> ::= (<matriz> <vector>)
+                         ::= <list>
 |#
 (define
   (prod-scalar-matriz mat vec)
@@ -570,9 +584,10 @@
     [else (cons (sum-prod (car mat) vec)(prod-scalar-matriz (cdr mat) vec))]))
 
 ;; sum-prod: 
-;; Propósito:
+;; Propósito: calcular el producto punto entre dos vectores, donde fil es el primer vector y vec es el segundo vector. 
 #| Gramática:
-
+<sum-prod> ::= (<fila> <vector>)
+               ::=<list>
 |#
 (define
   (sum-prod fil vec)
@@ -591,9 +606,10 @@
 ;; Inicio punto #18
 
 ;; pascal: 
-;; Propósito:
+;; Propósito: generar las n filas del triángulo de Pascal, donde cada fila representa los coeficientes binomiales de (x + y)^n en orden creciente de grado
 #| Gramática:
-
+<pascal> ::=(<int>)
+             ::= <list>
 |#
 (define
   (pascal n)
@@ -602,17 +618,20 @@
     [else (agregar-extremos (pascal (- n 1)))]))
 
 ;; agregar-extremos: 
-;; Propósito:
+;; Propósito:  tomar una lista lst-e que representa una fila del triángulo de Pascal (con el primer y último elemento ya existentes) y agregar un 1 al principio y al final de la lista.
 #| Gramática:
-
+<agregar-extremos> ::= (<lst-e>)
+                       ::= <list>
 |#
 (define
   (agregar-extremos lst-e)
   (cons 1 (agregar-interiores lst-e)))
 
 ;; agregar-interiores: 
-;; Propósito:
+;; Propósito: tomar una lista lst-i y crear una nueva lista donde cada elemento es la suma de dos elementos adyacentes en la lista original lst-i, excepto para el primer y último elemento que se mantienen iguales.
 #| Gramática:
+<agregar-interiores> ::= (<lst-i>)
+                        ::<list>
 
 |#
 (define
