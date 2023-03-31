@@ -24,11 +24,9 @@
 ;; Función invert-aux
 ;; Propósito: Toma una lista una lista de pares y devuelve una nueva lista donde el primer elemento de cada par, es el segundo elemento del par original, y el segundo elemento es el primer elemento del par original.
 #| Gramática:
-<lista-de-pares> ::= ()
-                 ::= (<par> <lista-de-pares>)
-<par> ::= (<elem1> <elem2>)
-<elem1> ::= cualquier elemento válido
-<elem2> ::= cualquier elemento válido
+<lista> ::= ()
+        ::= (<par> <lista>)
+<par>   ::= (<int> <int>)
 |#
 (define invert-aux
   (lambda(l)
@@ -42,7 +40,9 @@
 ;; Propósito:
 ;; L x P -> L' : Procedimiento que invierte las tuplas de una lista L y devuelve otra lista L' aplicandole el predicado P
 #| Gramática:
-
+<lista> <predicado>::= ()
+                   ::= (<int> <lista>)
+                   ::= (<int> <int>)
 |#
 (define invert 
   (lambda(l p)
@@ -481,7 +481,11 @@
 ;; count-odd-and-even: 
 ;; Propósito:
 #| Gramática:
-
+  <arbol> ::= <valor>
+          ::= (<arbol> . <arbol>)
+  <valor> ::= <int>
+          ::= #t
+          ::= #f
 |#
 (define (count-odd-and-even arbol)
   (define (aux arbol)
