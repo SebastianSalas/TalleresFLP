@@ -504,11 +504,33 @@
 
 ;; Inicio punto #16
 
+;; Función suma-simpson:
+;; Propósito: Procedimiento auxiliar que calcula todos los términos de la sumatoria de Simpson a excepción del primer y último término, devuelve el resultado de los términos que calcula.
+(define suma-simpson
+  (lambda(f a h n)
+    (cond
+      [(= 0 n) 0]
+      [(= 2 n) (* 4 (f (+ a (* (- n 1) h))))]
+      [else (+ (* 4 (f (+ a (* (- n 1) h)))) (* 2 (f (+ a (* (- n 2) h)))) (suma-simpson f a h (- n 2)))])))
 
+;; Función suma-aux:
+;; Propósito: Procedimiento auxiliar que calcula los valores del primer y último término de la sumatoria de Simpson, devuelve la suma de todos los términos de la suma
+(define suma-aux
+  (lambda(f a h n)
+    (+ (f a) (f (+ a (* n h))) (suma-simpson f a h n))))
+
+;; Función simpson-rule:
+;; Propósito: Procedimiento que calcula la integral de una función F entre los límites A y B siguiendo la regla de Simpson con el entero par N y retorna la integral R
+(define simpson-rule
+           (lambda(f a b n)
+              (let ((h (/ (- b a) n)))
+                  (* (/ h 3) (suma-aux f a h n)))))
 
 ;; Pruebas punto #16
-
-
+(display "\n\nPunto #16\n\nLlamada #1\nEntrada        : (lambda (x) (* x (* x x))) 1 5 8)\nSalida esperada: 156\nResultado      : ")
+(display (simpson-rule (lambda (x) (* x (* x x))) 1 5 8))
+(display "\n\nLlamada #2\nEntrada        : (lambda (x) x) 1 5 12)\nSalida esperada: 12\nResultado      : ")
+(display (simpson-rule (lambda (x) x) 1 5 12))
 
 ;; Fin punto #16
 
