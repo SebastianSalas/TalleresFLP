@@ -168,9 +168,10 @@
 ;; Inicio punto #5
 
 ;; list-index: 
-;; Propósito:
+;; Propósito: Devuelve el índice primer elemento de la lista que cumpla con el predicado p.
 #| Gramática:
-
+<predicado><lista>::= #f
+                  ::= <int>
 |#
 (define (list-index p l)
   (define (aux l n)
@@ -194,9 +195,11 @@
 ;; Inicio punto #6
 
 ;; swapper: 
-;; Propósito:
+;; Propósito: Recibe 2 argumentos y una lista, la función recorre la lista y si coincide con alguno de los
+;; dos argumentos, lo intercambia por el contrario.
 #| Gramática:
-
+<any><any><list>:=()
+                := <list>
 |#
 (define (swapper e1 e2 l)
   (if (null? l)
@@ -221,9 +224,11 @@
 ;; Inicio punto #7
 
 ;; cartesian-product: 
-;; Propósito:
+;; Propósito: Devuelve una lista de pares ordenados con los elementos de la primera lista ingresada
+;; y la segunda lista ingresada
 #| Gramática:
-
+<list><list>::=()
+            ::=<list>
 |#
 (define (cartesian-product l1 l2)
   (cond ((null? l1) '())
@@ -232,9 +237,11 @@
                       (cartesian-product (cdr l1) l2)))))
 
 ;; aux: 
-;; Propósito:
-#| Gramática:
-
+;; Propósito: Genera una lista de pares en donde el primer elemento es el argumento ingresado y
+;; el segundo elemento es cada uno de los elementos de la lista.
+#| Gramática: 
+<any><list>::=()
+           ::=<list>
 |#
 (define (aux x l)
   (cond ((null? l) '())
@@ -299,9 +306,10 @@
 ;; Inicio punto #9
 
 ;; recorre-lista: 
-;; Propósito:
+;; Propósito: Recorre la lista ingresada y la compara con el ingresado, devuelve un entero con }
+;; las inversiones que encuentra en cada iteracion
 #| Gramática:
-
+<list><int><int> ::= <int>
 |#
 (define recorre-lista
   (lambda (l head acum)
@@ -314,9 +322,10 @@
 )
 
 ;; inversions:
-;; Propósito:
+;; Propósito: Retorna el numero de inversiones de una lista
 #| Gramática:
-
+<list> ::= ()
+       ::= <int>
 |#
 (define inversions
   (lambda (l)
