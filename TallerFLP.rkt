@@ -92,18 +92,21 @@
 ;; Inicio punto #3
 
 ;; mayor5?: 
-;; Propósito:
+;; Propósito: Valida si el valor ingresado es mayor a 5.
 #| Gramática:
-
+<int> ::= #t
+      ::= #f
 |#
 (define mayor5? (lambda (x) (if(> x  5)
                             #t
                             #f)))                      
 
 ;; list-set: 
-;; Propósito:
-#| Gramática:
-
+;; Propósito: Reemplaza el elemento en la posición n de la lista con el valor ingresado x
+;; si se cumple el predicado para el elemento en la posición n, y devuelve la lista modificada. 
+#| Gramática: 
+<lista><int><any><predicado>::= ()
+                            ::= <list>
 |#
 (define list-set
   (lambda (lst n x p)
@@ -138,9 +141,11 @@
 ;; Inicio punto #4
 
 ;; filter-in: 
-;; Propósito:
+;; Propósito: recibe un predicado p y una lista l, 
+;; y devuelve una nueva lista que contiene únicamente los elementos de l los cuales cumplen el predicado.
 #| Gramática:
-
+<predicado><lista>::= ()
+                  ::= <list>
 |#
 (define filter-in
   (lambda (p l)
