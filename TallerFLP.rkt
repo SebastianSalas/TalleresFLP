@@ -249,6 +249,8 @@
 ;; mapping: 
 ;; Propósito:
 #| Gramática:
+<mapping> ::= (<unary-function> <list1> <list2>)
+<unary-function> ::= (lambda (<variable>) <expression>)
 
 |#
 (define mapping
@@ -263,7 +265,9 @@
 ;; mapping-filtered: 
 ;; Propósito:
 #| Gramática:
-
+              <mapping-filtered> ::= (<unary-function> <list1> <list2>)
+              <unary-function> ::= <lambda-expression>
+              <aux> ::= (<unary-function> <list1> <list2> <int>)
 |#
 (define (mapping-filtered func L1 L2)
   (define (aux F L1 L2 prev)
