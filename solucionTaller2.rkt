@@ -83,12 +83,21 @@
 ;; Fin punto #1
 
 ;; Inicio punto #2
-
-
+(define (PARSEBNF lst)
+  (cond
+    [(null? lst) '()]
+    [(not (list? lst)) lst]
+    [(eq? (car lst) '()) '()]
+    [(eq? (car lst) '::) (list 'or (PARSEBNF (cdr lst)))]
+    [(eq? (car lst) '*) (list 'and (PARSEBNF (cdr lst)))]
+    [else (cons (PARSEBNF (car lst))
+                (PARSEBNF (cdr lst)))]
+  )
+)
 
 ;; Pruebas punto #2
-
-
+(PARSEBNF '(a :: b ( * c :: d) * e))
+(PARSEBNF '(a * (b c) :: ( (d * e) :: f) * g))
 
 ;; Fin punto #2
 
