@@ -9,11 +9,76 @@
 
 ;; Inicio punto #1
 
+;;    ---- EXTRACTORES ----
+
+
+(define (fnc->vars exp)
+    (cond ((null? exp) '())
+          ((number? exp) (list exp))
+          ((and (eqv? (car exp) 'fnc) (number? (cadr exp))) append (fnc->vars (caddr exp)))
+          ((is-or? exp) (append (fnc->vars (or->left exp))
+                             (fnc->vars (or->right exp))))
+          ((is-and? exp) (append (fnc->vars (and->left exp))
+                              (fnc->vars (and->right exp))))
+          )
+    )
+
+
+(define (and->left and)
+  (car and))
+
+(define (and->right and)
+  (caddr and))
+
+(define (or->left or)
+  (car or))
+
+(define (or->right or)
+  (caddr or))
+
+(define is-and?
+  (lambda (exp)
+    (eqv? (cadr exp) 'and)
+    )
+  )
+
+(define is-or?
+  (lambda (exp)
+    (eqv? (cadr exp) 'or)
+    )
+  )
+
+
+
+;;    ---- CONSTRUCTORES ----
+
+;;    ---- AND ----
+
+
+(define cons-and
+  (lambda (left right)
+    (list left 'and right))
+  )
+
+;;    ---- OR ----
+
+(define cons-or
+  (lambda(left right)
+    (list left 'or right))
+  )
+
+;;    ---- FNC ----
+
+(define fnc
+  (lambda(n clauses)
+    (list 'fnc n clauses)))
+  
+
 
 
 ;; Pruebas punto #1
 
-
+(define example (fnc 2 (cons-and (cons-or 1 2) (cons-or -1 -2))))
 
 ;; Fin punto #1
 
