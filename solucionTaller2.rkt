@@ -95,6 +95,7 @@
 ;; Fin punto #1
 
 ;; Inicio punto #2
+
 (define (PARSEBNF lst)
   (cond
     [(null? lst) '()]
@@ -107,9 +108,30 @@
   )
 )
 
+(define (UNPARSEBNF lst)
+  (cond
+    [(null? lst) '()]
+    [(not (list? lst)) lst]
+    [(eq? (car lst) '()) '()]
+    [(eq? (car lst) 'or) (cons ':: (UNPARSEBNF (cdr lst)))]
+    [(eq? (car lst) 'and) (cons '* (UNPARSEBNF (cdr lst)))]
+    [(and (list? (car lst)) (not (eq? (car lst) '())))
+     (cons (UNPARSEBNF (car lst)) (UNPARSEBNF (cdr lst)))]
+    [else (cons (UNPARSEBNF (car lst))
+                (UNPARSEBNF (cdr lst)))]
+  )
+)
+
 ;; Pruebas punto #2
-(PARSEBNF '(a :: b ( * c :: d) * e))
-(PARSEBNF '(a * (b c) :: ( (d * e) :: f) * g))
+
+(display "Pruebas PARSEBNF:\n")
+(display (PARSEBNF '(a :: b ( * c :: d) * e)))
+(newline)
+(display (PARSEBNF '(a * (b c) :: ( (d * e) :: f) * g)))
+(display "\n\nPruebas UNPARSEBNF:\n")
+(display (UNPARSEBNF '(a or (b (and (c or (d))) and (e)))))
+(newline)
+(display (UNPARSEBNF '(a and ((b c) or (((d and (e)) or (f)) and (g))))))
 
 ;; Fin punto #2
 
