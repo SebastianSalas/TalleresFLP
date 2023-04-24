@@ -48,7 +48,15 @@
     )
   )
 
-
+(define vars-valid?
+  (lambda(exp vars)
+    (cond
+      ((null? vars) #t)
+      ((> (car vars) (cadr exp)) #f)
+      (else(vars-valid? exp (cdr vars)))
+      )
+  )
+  )
 
 ;;    ---- CONSTRUCTORES ----
 
@@ -69,16 +77,20 @@
 
 ;;    ---- FNC ----
 
-(define fnc
+(define cons-fnc
   (lambda(n clauses)
     (list 'fnc n clauses)))
   
-
+(define (fnc exp)
+  (cond
+    ((vars-valid? exp (fnc->vars exp)) exp)
+    (else((eopl:error "Syntax error" )))
+    ))
 
 
 ;; Pruebas punto #1
 
-(define example (fnc 2 (cons-and (cons-or 1 2) (cons-or -1 -2))))
+(define example (fnc(cons-fnc 2 (cons-and (cons-or 1 2) (cons-or 1 1)))))
 
 ;; Fin punto #1
 
