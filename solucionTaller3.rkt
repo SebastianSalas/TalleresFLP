@@ -50,3 +50,10 @@
   (primitiva-un ("longitud") primitiva-longitud)
   (primitiva-un ("add1") primitiva-add1)
   (primitiva-un ("sub1") primitiva-sub1)))
+
+;; Data types for the abstract syntax of the grammar built automatically:
+(sllgen:make-define-datatypes especificacion-lexica gramatica)
+
+(define show-the-datatypes
+  (lambda () (sllgen:list-define-datatypes especificacion-lexica gramatica)))
+
