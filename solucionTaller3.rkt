@@ -57,3 +57,22 @@
 (define show-the-datatypes
   (lambda () (sllgen:list-define-datatypes especificacion-lexica gramatica)))
 
+;; Parser, Scanner, Interface
+;; The Frontend (Integrated lexical analysis (scanner) and syntactic analysis (parser))
+
+(define scan&parse
+  (sllgen:make-string-parser especificacion-lexica gramatica))
+
+;; The Lexical Analyzer (Scanner)
+
+(define just-scan
+  (sllgen:make-string-scanner especificacion-lexica gramatica))
+
+;; The Interpreter (Frontend + Evaluation + Signal for Reading)
+
+(define interpretador
+  (sllgen:make-rep-loop "--> "
+    (lambda (programa) (evaluar-programa  programa))
+    (sllgen:make-stream-parser 
+      especificacion-lexica
+      gramatica)))
