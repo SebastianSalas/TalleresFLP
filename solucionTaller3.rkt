@@ -150,8 +150,7 @@
                         (if (valor-verdad? (evaluar-expresion test-exp amb))
                             (evaluar-expresion true-exp amb)
                             (evaluar-expresion false-exp amb)))
-      (proc-exp (ids cuerpo)
-                (""))
+      (proc-exp (ids cuerpo) (closure ids cuerpo amb))
 
       
       (primapp-un-exp (prim exp) (apply-prim-un prim exp amb))
@@ -215,3 +214,11 @@
 (define valor-verdad?
   (lambda (x)
     (not (zero? x))))
+
+;Procedimientos
+;;This is a constructor of the procedures, which are used to assign the ids, body and the environment of the procedures that we use in this language
+(define-datatype procval procval?
+  (closure
+   (ids (list-of symbol?))
+   (cuerpo expresion?)
+   (amb ambiente?)))
