@@ -84,7 +84,12 @@
   (empty-amb-record)
   (extended-amb-record (syms (list-of symbol?))
                        (vals (list-of scheme-value?))
-                       (amb ambiente?)))
+                       (amb ambiente?))
+  (recursively-extended-amb-record (proc-names (list-of symbol?))
+                                   (idss (list-of (list-of symbol?)))
+                                   (bodies (list-of expresion?))
+                                   (amb ambiente?)))
+  
 
 (define scheme-value? (lambda (v) #t))
 
@@ -98,6 +103,11 @@
   (lambda (syms vals amb)
     (extended-amb-record syms vals amb)))
 
+(define extend-amb-recursively
+  (lambda (proc-names idss bodies old-env)
+    (recursively-extended-amb-record
+     proc-names idss bodies old-env)))
+
 ;; Performs the search for a symbol in an environment
 ;; Used in the evaluation of an expression, to find a given variable in a given environment. If the variable is not found, it returns an error message
 (define buscar-variable
@@ -109,7 +119,14 @@
                            (let ((pos (list-find-position sym syms)))
                              (if (number? pos)
                                  (list-ref vals pos)
-                                 (buscar-variable amb sym)))))))
+                                 (buscar-variable amb sym))))
+      (recursively-extended-amb-record (proc-names idss bodies old-env)
+                                       (let ((pos (list-find-position sym proc-names)))
+                                         (if (number? pos)
+                                             (closure (list-ref idss pos)
+                                                      (list-ref bodies pos)
+                                                      amb)
+                                             (buscar-variable old-env sym)))))))
 
 ;; evaluar-programa
 ;; This is the main procedure, it takes an abstract syntax tree and returns a value.
@@ -167,7 +184,8 @@
                                  "no es un procedimiento" proc))))
 
       (letrec-exp (proc-names idss bodies letrec-body)
-                  (""))
+                  (evaluar-expresion letrec-body
+                                   (extend-amb-recursively proc-names idss bodies amb)))
 
       )))
 
