@@ -323,3 +323,44 @@
 ;    in evaluar @multiplicacion(10,3) finEval
 
 ;-------------------------------------------------------------------------------------------------------------------------------
+
+;;e) Crea una función @integrantes que muestre los nombres de los integrantes del grupo y adicionalmente crea un decorador que al invocarlo salude a los integrantes
+
+; declarar(
+;
+;         @integrantes = procedimiento() haga "Sebastian-Diego-y-Alexander" finProc ;
+;         @saludar = procedimiento (@proced) haga procedimiento() haga ("Hola:" concat evaluar @proced() finEval) finProc finProc
+;
+;         )
+;
+;         {
+;          declarar(
+;                   @decorate = evaluar @saludar (@integrantes) finEval
+;                   )
+;                  {
+;                   evaluar @decorate () finEval
+;                  }
+;
+;          }
+
+;---------------------------------------------------------------------------------------------------------------------------------------
+
+;;f)  Modifique el ejercicio anterior para que el decorador reciba como parámetro otro mensaje que debe ponerse al final de todo el string
+
+; declarar(
+;         @integrantes = procedimiento(@tx) haga ("Sebastian-Diego-Alexander-" concat @tx) finProc ;
+;         @saludar = procedimiento (@proced) haga procedimiento(@tx) haga ("Hola:" concat evaluar @proced(@tx) finEval) finProc finProc 
+;         )
+;
+;         {
+;          declarar(
+;
+;                   @decorate = evaluar @saludar(@integrantes) finEval
+;                             )
+;                  {
+;                   evaluar @decorate("EstudiantesCursoFLP") finEval
+;                  }
+;
+;          }
+
+;----------------------------------------------------------------------------------------------------------------------------------------
