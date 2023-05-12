@@ -144,7 +144,9 @@
                    (apply-prim-bin  exp1 prim exp2 amb))
 
       (variableLocal-exp (ids exps cuerpo)
-                         (""))
+                         (let ((args (eval-exps exps amb)))
+                           (evaluar-expresion cuerpo
+                           (extend-amb ids args amb))))
 
       (condicional-exp (test-exp true-exp false-exp)
                         (if (valor-verdad? (evaluar-expresion test-exp amb))
@@ -156,16 +158,34 @@
       (primapp-un-exp (prim exp) (apply-prim-un prim exp amb))
 
       (app-exp (exp exps)
-               (""))
+               (let ((proc (evaluar-expresion exp amb))
+                     (args (eval-exps exps amb)))
+
+                 (if (procval? proc)
+                     (apply-procedure proc args)
+                     (eopl:error 'evaluar-expresion
+                                 "no es un procedimiento" proc))))
 
       (letrec-exp (proc-names idss bodies letrec-body)
                   (""))
 
       )))
-;;apply-prim-bin
 
-;;Performs the specification of binary primitives application
-;;Used for addition, subtraction, multiplication, and division of defined numbers, and the concatenation of two expressions.
+;; eval-exps
+;; This helper function takes a list of expressions and an environment and evaluates each exp using eval-exp
+(define eval-exps
+  (lambda (exps amb)
+    (map (lambda (x) (eval-exp x amb)) exps)))
+
+;; eval-exp
+;; This function calls evaluate-expression with the current environment to determine the values ​​of the variables.
+(define eval-exp
+  (lambda (exp amb)
+    (evaluar-expresion exp amb)))
+
+;; apply-prim-bin
+;; Performs the specification of binary primitives application
+;; Used for addition, subtraction, multiplication, and division of defined numbers, and the concatenation of two expressions.
 (define apply-prim-bin
   (lambda (exp1 prim exp2 amb)
     (cases primitiva-bin prim
@@ -175,11 +195,9 @@
       (primitiva-div () (/ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-concat () (string-append (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))
 
-;;apply-prim-un
-
-;;Performs the specification of unary primitives application
-;;Used to determine the length of an expression, as well as to add and subtract one unit from a defined number.
-
+;; apply-prim-un
+;; Performs the specification of unary primitives application
+;; Used to determine the length of an expression, as well as to add and subtract one unit from a defined number.
 (define apply-prim-un
   (lambda (prim arg amb)
     (cases primitiva-un prim
@@ -215,10 +233,18 @@
   (lambda (x)
     (not (zero? x))))
 
-;Procedimientos
-;;This is a constructor of the procedures, which are used to assign the ids, body and the environment of the procedures that we use in this language
+;; Procedimientos
+;; This is a constructor of the procedures, which are used to assign the ids, body and the environment of the procedures that we use in this language
 (define-datatype procval procval?
   (closure
    (ids (list-of symbol?))
    (cuerpo expresion?)
    (amb ambiente?)))
+
+;; app-exp(exp exps)
+;; Determines how to apply a value of type procedure
+ (define apply-procedure
+   (lambda (proc exps)
+     (cases procval proc
+      (closure (ids cuerpo amb)
+               (evaluar-expresion cuerpo (extend-amb ids exps amb))))))
