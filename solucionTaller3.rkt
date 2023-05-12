@@ -147,7 +147,9 @@
                          (""))
 
       (condicional-exp (test-exp true-exp false-exp)
-                       (""))
+                        (if (valor-verdad? (evaluar-expresion test-exp amb))
+                            (evaluar-expresion true-exp amb)
+                            (evaluar-expresion false-exp amb)))
       (proc-exp (ids cuerpo)
                 (""))
 
@@ -191,3 +193,9 @@
               (if (number? list-index-r)
                 (+ list-index-r 1)
                 #f))))))
+
+;; valor-verdad?
+;; This function takes an argument and determines whether it corresponds to the boolean value false (equals zero) or the boolean value true (any other value).
+(define valor-verdad?
+  (lambda (x)
+    (not (zero? x))))
