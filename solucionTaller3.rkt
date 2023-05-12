@@ -153,7 +153,8 @@
       (proc-exp (ids cuerpo)
                 (""))
 
-      (primapp-un-exp (prim exp) (""))
+      
+      (primapp-un-exp (prim exp) (apply-prim-un prim exp amb))
 
       (app-exp (exp exps)
                (""))
@@ -162,7 +163,10 @@
                   (""))
 
       )))
+;;apply-prim-bin
 
+;;Performs the specification of binary primitives application
+;;Used for addition, subtraction, multiplication, and division of defined numbers, and the concatenation of two expressions.
 (define apply-prim-bin
   (lambda (exp1 prim exp2 amb)
     (cases primitiva-bin prim
@@ -170,7 +174,19 @@
       (primitiva-resta () (- (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-multi () (* (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-div () (/ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
-      (primitiva-concat () (string-append (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))      
+      (primitiva-concat () (string-append (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))
+
+;;apply-prim-un
+
+;;Performs the specification of unary primitives application
+;;Used to determine the length of an expression, as well as to add and subtract one unit from a defined number.
+
+(define apply-prim-un
+  (lambda (prim arg amb)
+    (cases primitiva-un prim
+      (primitiva-longitud () (string-length(evaluar-expresion arg amb)))
+      (primitiva-add1 () (+ (evaluar-expresion arg amb ) 1))
+      (primitiva-sub1 () (- (evaluar-expresion arg amb ) 1)))))
 
 ;; Auxiliary
 
