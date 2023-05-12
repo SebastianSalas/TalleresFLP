@@ -7,7 +7,7 @@
 ;; Jhon Alexander Valencia - 2042426
 ;; Diego Fernando Victoria - 2125877
 
-;;Performs the lexical specification, which refers the way in wich the program is divided into lexical units
+;; Performs the lexical specification, which refers the way in wich the program is divided into lexical units
 (define especificacion-lexica
   '((espacio-blanco (whitespace) skip)
     (comentario ("->" (arbno (or digit letter #\newline whitespace))) skip)  ;The comments starts with ->
@@ -111,9 +111,16 @@
                                  (list-ref vals pos)
                                  (buscar-variable amb sym)))))))
 
-; Ambiente inicial
-; Es una funcion cuyo dominio es un conjunto finito de variables y cuyo rango es el conjunto de todos los valores de Scheme, es usado usado para asociar las variables con sus valores en la implementacion
-; de un lenguaje de programacion.
+;; evaluar-programa
+;; This is the main procedure, it takes an abstract syntax tree and returns a value.
+(define evaluar-programa
+  (lambda (pgm)
+    (cases programa pgm
+      (un-programa (cuerpo)
+                 (evaluar-expresion cuerpo (init-amb))))))
+
+;; init-amb
+;; Es una funcion cuyo dominio es un conjunto finito de variables y cuyo rango es el conjunto de todos los valores de Scheme, es usado usado para asociar las variables con sus valores en la implementacion de un lenguaje de programacion.
 (define init-amb
   (lambda ()
     (extend-amb
@@ -121,18 +128,60 @@
      '(1 2 3 "hola" "FLP")
      (empty-amb))))
 
-;;             Auxiliary
+;; evaluar-expresion: <expresion> <ambiente> -> numero
+;; Evaluates the expression in the input environment
+;; This function uses an expression and an environment, and returns the value of the expression using that environment to find the values of the variables.
+(define evaluar-expresion
+  (lambda (exp amb)
+    (cases expresion exp
+      (numero-lit (datum) datum)
 
-;;Auxiliary functions to find the position of a symbol in an environment's symbol list
+      (var-exp (id) (buscar-variable amb id))
 
-;;Performs a search for the position of a symbol
-;;Used for the search of a variable in functions used in the language
+      (texto-lit (texto) texto)
+
+      (primapp-bin-exp (exp1 prim exp2)
+                   (apply-prim-bin  exp1 prim exp2 amb))
+
+      (variableLocal-exp (ids exps cuerpo)
+                         (""))
+
+      (condicional-exp (test-exp true-exp false-exp)
+                       (""))
+      (proc-exp (ids cuerpo)
+                (""))
+
+      (primapp-un-exp (prim exp) (""))
+
+      (app-exp (exp exps)
+               (""))
+
+      (letrec-exp (proc-names idss bodies letrec-body)
+                  (""))
+
+      )))
+
+(define apply-prim-bin
+  (lambda (exp1 prim exp2 amb)
+    (cases primitiva-bin prim
+      (primitiva-suma () (+ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (primitiva-resta () (- (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (primitiva-multi () (* (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (primitiva-div () (/ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (primitiva-concat () (string-append (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))      
+
+;; Auxiliary
+
+;; Auxiliary functions to find the position of a symbol in an environment's symbol list
+
+;; Performs a search for the position of a symbol
+;; Used for the search of a variable in functions used in the language
 (define list-find-position
   (lambda (sym los)
     (list-index (lambda (sym1) (eqv? sym1 sym)) los)))
 
-;;Performs the search for the index of a symbol in a list
-;;Used to find the position of the given symbol in a given list
+;; Performs the search for the index of a symbol in a list
+;; Used to find the position of the given symbol in a given list
 (define list-index
   (lambda (pred ls)
     (cond
