@@ -8,7 +8,7 @@
 ;; Diego Fernando Victoria - 2125877
 
 ;;Performs the lexical specification, which refers the way in wich the program is divided into lexical units
-(define lexic-specification
+(define especificacion-lexica
   '((espacio-blanco (whitespace) skip)
     (comentario ("->" (arbno (or digit letter #\newline whitespace))) skip)  ;The comments starts with ->
     (identificador ("@" letter (arbno (or letter digit))) symbol)
@@ -76,3 +76,69 @@
     (sllgen:make-stream-parser 
       especificacion-lexica
       gramatica)))
+
+;; *****************************
+
+;; Define data type ambiente
+(define-datatype ambiente ambiente?
+  (empty-amb-record)
+  (extended-amb-record (syms (list-of symbol?))
+                       (vals (list-of scheme-value?))
+                       (amb ambiente?)))
+
+(define scheme-value? (lambda (v) #t))
+
+;; Creates empty environment
+(define empty-amb  
+  (lambda ()
+    (empty-amb-record)))       ;llamado al constructor de ambiente vacío 
+
+;; Receives an environment and extends it with the new syms and vals with the environment.
+(define extend-amb
+  (lambda (syms vals amb)
+    (extended-amb-record syms vals amb)))
+
+;; Performs the search for a symbol in an environment
+;; Used in the evaluation of an expression, to find a given variable in a given environment. If the variable is not found, it returns an error message
+(define buscar-variable
+  (lambda (amb sym)
+    (cases ambiente amb
+      (empty-amb-record ()
+                        (eopl:error 'apply-amb "Error, la variable no existe" sym))
+      (extended-amb-record (syms vals amb)
+                           (let ((pos (list-find-position sym syms)))
+                             (if (number? pos)
+                                 (list-ref vals pos)
+                                 (buscar-variable amb sym)))))))
+
+; Ambiente inicial
+; Es una funcion cuyo dominio es un conjunto finito de variables y cuyo rango es el conjunto de todos los valores de Scheme, es usado usado para asociar las variables con sus valores en la implementacion
+; de un lenguaje de programacion.
+(define init-amb
+  (lambda ()
+    (extend-amb
+     '(@a @b @c @d @e)
+     '(1 2 3 "hola" "FLP")
+     (empty-amb))))
+
+;;             Auxiliary
+
+;;Auxiliary functions to find the position of a symbol in an environment's symbol list
+
+;;Performs a search for the position of a symbol
+;;Used for the search of a variable in functions used in the language
+(define list-find-position
+  (lambda (sym los)
+    (list-index (lambda (sym1) (eqv? sym1 sym)) los)))
+
+;;Performs the search for the index of a symbol in a list
+;;Used to find the position of the given symbol in a given list
+(define list-index
+  (lambda (pred ls)
+    (cond
+      ((null? ls) #f)
+      ((pred (car ls)) 0)
+      (else (let ((list-index-r (list-index pred (cdr ls))))
+              (if (number? list-index-r)
+                (+ list-index-r 1)
+                #f))))))
