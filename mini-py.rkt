@@ -71,3 +71,8 @@
   (primitiva-unaria ("head") primitiva-cabeza)
   (primitiva-unaria ("tail") primitiva-col)
   ))
+;****************** CREACION DE LOS DATATYPES ***********************
+(sllgen:make-define-datatypes especificacion-lexica gramatica)
+
+(define show-the-datatypes
+  (lambda () (sllgen:list-define-datatypes especificacion-lexica gramatica)))
