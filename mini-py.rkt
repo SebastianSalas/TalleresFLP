@@ -1,3 +1,4 @@
+#lang eopl
 ;; Solución proyecto final - Fundamentos de lenguajes de programación
 ;; Viernes, 9 de junio de 2023
 ;; Hecho por:
@@ -5,3 +6,68 @@
 ;; Jhon Alexander Valencia - 2042426
 ;; Diego Fernando Victoria - 2125877
 
+;**************** ESPECIFICACION LEXICA *****************
+(define especificacion-lexica
+  '((espacio-blanco (whitespace) skip)
+    (comentario ("->" (arbno (or digit letter #\newline whitespace))) skip)  ;The comments starts with ->
+    (identificador ("@" letter (arbno (or letter digit))) symbol)
+    (numero (digit (arbno digit)) number)
+    (numero ("-" digit (arbno digit)) number)
+    (numero (digit (arbno digit) "." digit (arbno digit)) number)
+    (numero ("-" digit (arbno digit) "." digit (arbno digit)) number)
+    (texto (letter (arbno (or letter ":" "?" "=" "'" "#" "$" "&" "." "," ";" "*" "!" "¡" "¿" "-" "_"))) string)
+    (booleano ("false") symbol)
+    (booleano ("true") symbol)
+    )
+  )
+
+
+;******************* GRAMATICA **************************
+
+(define gramatica
+'(
+  ;; Program
+  (programa (expresion) un-programa)
+
+  ;; Body
+  (cuerpo (expresion (arbno expresion)) cuerpoc)
+
+  ;; Expressions
+  (expresion (numero) numero-lit)
+  (expresion ("\"" texto "\"") texto-lit)
+  (expresion (identificador) var-exp)
+  (expresion ("(" expresion primitiva-bin expresion ")") primapp-bin-exp)
+  (expresion (primitiva-un "(" expresion ")") primapp-un-exp)
+  (expresion ("declarar" "(" (separated-list identificador "=" expresion ";") ")" "{" expresion "}" ) variableLocal-exp)
+  (expresion ("Si" expresion "entonces" expresion "sino" expresion "finSI") condicional-exp)
+  (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc") proc-exp)
+  (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval") app-exp)
+
+  ;; Binary primitive
+  (primitiva-bin ("+") primitiva-suma)
+  (primitiva-bin ("~") primitiva-resta)
+  (primitiva-bin ("/") primitiva-div)
+  (primitiva-bin ("*") primitiva-multi)
+  (primitiva-binaria ("%") primitiva-modulo)
+
+
+  (primitiva-binaria ("and") primitiva-and)
+  (primitiva-binaria ("or") primitiva-or)
+  (primitiva-bin ("concat") primitiva-concat)
+  (primitiva-binaria ("append") primitiva-append)
+  
+  (primitiva-binaria (">") primitiva-mayorque)
+  (primitiva-binaria ("<") primitiva-menorque)
+  (primitiva-binaria (">=") primitiva-mayorigual)
+  (primitiva-binaria ("<=") primitiva-menorigual)
+  (primitiva-binaria ("<>") primitiva-diferente)
+  (primitiva-binaria ("==") primitiva-igualque)
+  ;; Unary primitive
+  (primitiva-un ("longitud") primitiva-longitud)
+  (primitiva-un ("add1") primitiva-add1)
+  (primitiva-un ("sub1") primitiva-sub1)
+  (primitiva-unaria ("not") primitiva-not)
+  (primitiva-unaria ("empty?") primitiva-empty?)
+  (primitiva-unaria ("head") primitiva-cabeza)
+  (primitiva-unaria ("tail") primitiva-col)
+  ))
