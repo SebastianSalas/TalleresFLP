@@ -76,3 +76,27 @@
 
 (define show-the-datatypes
   (lambda () (sllgen:list-define-datatypes especificacion-lexica gramatica)))
+
+;*************** PARSER, SCANNER E INTERPRETADOR *************************
+;Parser
+(define scan&parse
+  (sllgen:make-string-parser especificacion-lexica gramatica))
+
+;Scanner
+(define just-scan
+  (sllgen:make-string-scanner especificacion-lexica gramatica))
+
+;Interpretador
+(define interpretador
+  (sllgen:make-rep-loop  "-->"
+                         (lambda (pgm) (eval-program  pgm)) 
+                         (sllgen:make-stream-parser 
+                          especificacion-lexica
+                          gramatica)))
+
+;********************* EVALUACION DEL PROGRAMA ****************************
+(define eval-program
+  (lambda (pgm)
+    (cases programa pgm
+      (un-programa (cuerpo)
+                 "eval-exp"))))
