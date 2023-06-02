@@ -11,11 +11,13 @@
 (define especificacion-lexica
   '((espacio-blanco (whitespace) skip)
     (comentario ("->" (arbno (or digit letter #\newline whitespace))) skip)  ;; The comments starts with ->
+    (letter("'" letter "'") symbol)
     (identificador ( letter (arbno (or letter digit))) symbol)
     (numero (digit (arbno digit)) number)
     (numero ("-" digit (arbno digit)) number)
     (numero (digit (arbno digit) "." digit (arbno digit)) number)
     (numero ("-" digit (arbno digit) "." digit (arbno digit)) number)
+    (bool (or "true" "false") boolean)
     (texto (letter (arbno (or letter ":" "?" "=" "'" "#" "$" "&" "." "," ";" "*" "!" "¡" "¿" "-" "_"))) string)))
 
 ;; Grammar of the language, which describes the rules of the language, used to define the terminal symbols, non-terminal symbols, and production rules.
@@ -29,12 +31,19 @@
 
   ;; Expressions
   (expresion (identificador) var-exp)
-  (expresion ("var" (arbno indentificador "=" (expresion))"," "in" expresion ";")varLet-exp)
-  (expresion ("const" (arbno indentificador "=" (expresion))"," "in" expresion ";")const-exp)
+  (expresion ("var" (arbno identificador "=" (expresion))"," "in" expresion ";") varLet-exp)
+  (expresion ("const" (arbno identificador "=" (expresion))"," "in" expresion ";") const-exp)
   (expresion ("rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) rec-exp)
   (expresion (numero) numero-lit)
   (expresion (" " "" texto " " "") cadena-lit)
   (expresion (bool) bool-lit)
+  (expresion ("[" (separated-list expresion ";") "]") list-exp)
+  (expresion ("tupla" "[" (separated-list expresion ";") "]") tupla-exp)
+  (expresion ("{" (identificador "=" expresion (arbno ";" identificador "=" expresion))) registro-exp)
+  (expr-bool (pred-prim "(" expresion "," expresion ")") pred-exp)
+  (expr-bool (oper-bin-bool "(" expr-bool "," expr-bool ")") oper-bin-exp)
+  (expr-bool (bool) bool-exp)
+  (expr-bool (oper-un-bool "(" expr-bool ")" ) oper-un-exp)
   (expression ("begin" expresion (arbno ";" expression) "end") begin-exp)
   (expresion ("if" expr-bool "then" expresion ("[" "else" expresion "]")"end") condicional-exp)
   (expresion ("while" expr-bool "do" expresion "done") while-exp)
@@ -50,17 +59,26 @@
   (primitiva-bin ("-") primitiva-resta)
   (primitiva-bin ("/") primitiva-div)
   (primitiva-bin ("*") primitiva-multi)
-  ;;(primitiva-bin ("%") primitiva-modulo)
-  (primitiva-un ("longitud") primitiva-longitud)
+  (primitiva-bin ("%") primitiva-mod)
   (primitiva-un ("add1") primitiva-add1)
-  (primitiva-un ("sub1") primitiva-sub1)))
+  (primitiva-un ("sub1") primitiva-sub1))
 
 ;; Hexadecimal
-  (primitiva-bin ("+") primitiva-suma-ex)
-  (primitiva-bin ("-") primitiva-resta)
-  (primitiva-bin ("*") primitiva-multi)
-  (primitiva-un ("add1") primitiva-add1)
-  (primitiva-un ("sub1") primitiva-sub1)
+  (primitiva-bin ("+") primitiva-suma-hex)
+  (primitiva-bin ("-") primitiva-resta-hex)
+  (primitiva-bin ("*") primitiva-multi-hex)
+  (primitiva-un ("add1") primitiva-add1-hex)
+  (primitiva-un ("sub1") primitiva-sub1-hex)
+
+;; Boolean
+  (pred-prim ("<") menor)
+  (pred-prim (">") mayor)
+  (pred-prim ("<=") menor_igual)
+  (pred-prim (">=") mayor_igual)
+  (pred-prim ("==") igual)
+  (oper-bin-bool ("and") and-op)
+  (oper-bin-bool ("or") or-op)
+  (oper-un-bool ("not") not)
 
 ;; String
  (primitiva-bin ("concat") primitiva-concat)
@@ -69,26 +87,48 @@
 ;; List
   (primitiva-un ("vacio?") primitiva-vacio?)
   (primitiva-un ("vacio") primitiva-vacio)
-  (primitiva-un ("crear") primitiva-crear)
+  (primitiva-un ("crear-lista") primitiva-crear-lista)
+  (primitiva-un ("lista?") primitiva-lista)
   (primitiva-un ("cabeza") primitiva-cabeza)
   (primitiva-un ("cola") primitiva-cola)
-  (primitiva-bi ("append") primitiva-append)
   (primitiva-un ("ref-list") primitiva-refList)
-  (primitiva-bi ("set-list") primitiva-setList)
-
-;; List / Tuples
-  (primitiva-un ("vacio?") primitiva-vacio?)
-  (primitiva-un ("vacio") primitiva-vacio)
-  (primitiva-un ("crear") primitiva-crear)
-  (primitiva-un ("cabeza") primitiva-cabeza)
-  (primitiva-un ("cola") primitiva-cola)
+  (primitiva-bin ("set-list") primitiva-setList)
+  (primitiva-bin ("append") primitiva-append)
 
 ;; Tuples
+  (primitiva-un ("crear-tupla") primitiva-crear-tupla)
   (primitiva-un ("tupla?") primitiva-tupla?)
-  (primitiva-bi ("ref-tuple") primitiva-refTuple)
+  (primitiva-bin ("ref-tuple") primitiva-refTuple)
 
 ;; Registers
   (primitiva-un ("registros?") primitiva-registros?)
   (primitiva-un ("crear-resgistro") primitiva-crearRegistro)
-  (primitiva-bi ("ref-resgistro") primitiva-refRegistro)
-  (primitiva-bi ("set-registro") primitiva-setRegistro)
+  (primitiva-bin ("ref-resgistro") primitiva-refRegistro)
+  (primitiva-bin ("set-registro") primitiva-setRegistro))
+
+;; Interpreter
+
+;; Data types for the abstract syntax of the grammar built automatically:
+(sllgen:make-define-datatypes especificacion-lexica gramatica)
+
+(define show-the-datatypes
+  (lambda () (sllgen:list-define-datatypes especificacion-lexica gramatica)))
+
+;; Parser, Scanner, Interface
+;; The frontend (Integrated lexical analysis (scanner) and syntactic analysis (parser))
+(define scan&parse
+  (sllgen:make-string-parser especificacion-lexica gramatica))
+
+;; The lexical analyzer (Scanner)
+(define just-scan
+  (sllgen:make-string-scanner especificacion-lexica gramatica))
+
+;; The Interpreter (Frontend + Evaluation + Signal for reading)
+(define interpretador
+  (sllgen:make-rep-loop "--> "
+    (lambda (programa) (evaluar-programa  programa))
+    (sllgen:make-stream-parser 
+      especificacion-lexica
+      gramatica)))
+
+;; *****************************
