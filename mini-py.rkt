@@ -12,13 +12,13 @@
   '((espacio-blanco (whitespace) skip)
     (comentario ("->" (arbno (or digit letter #\newline whitespace))) skip)  ;; The comments starts with ->
     (letter("'" letter "'") symbol)
-    (identificador ( letter (arbno (or letter digit))) symbol)
+    (identificador ("$" letter (arbno (or letter digit))) symbol)
     (numero (digit (arbno digit)) number)
     (numero ("-" digit (arbno digit)) number)
     (numero (digit (arbno digit) "." digit (arbno digit)) number)
     (numero ("-" digit (arbno digit) "." digit (arbno digit)) number)
-    (bool (or "true" "false") boolean)
-    (texto (letter (arbno (or letter ":" "?" "=" "'" "#" "$" "&" "." "," ";" "*" "!" "¡" "¿" "-" "_"))) string)))
+    (bool (or "@true" "@false") boolean)
+    (texto (letter (arbno (or letter ":" "?" "=" "'" "&" "." "," ";" "*" "!" "¡" "¿" "-" "_"))) string)))
 
 ;; Grammar of the language, which describes the rules of the language, used to define the terminal symbols, non-terminal symbols, and production rules.
 (define gramatica
@@ -35,11 +35,11 @@
   (expresion ("const" (arbno identificador "=" (expresion))"," "in" expresion ";") const-exp)
   (expresion ("rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) rec-exp)
   (expresion (numero) numero-lit)
-  (expresion (" " "" texto " " "") cadena-lit)
+  (expresion ("\"" texto "\"") cadena-lit)
   (expresion (bool) bool-lit)
   (expresion ("[" (separated-list expresion ";") "]") list-exp)
   (expresion ("tupla" "[" (separated-list expresion ";") "]") tupla-exp)
-  (expresion ("{" (identificador "=" expresion (arbno ";" identificador "=" expresion))) registro-exp)
+  (expresion ("{" (identificador "=" expresion (arbno ";" identificador "=" expresion)) "}") registro-exp)
   (expr-bool (pred-prim "(" expresion "," expresion ")") pred-exp)
   (expr-bool (oper-bin-bool "(" expr-bool "," expr-bool ")") oper-bin-exp)
   (expr-bool (bool) bool-exp)
@@ -48,11 +48,11 @@
   (expresion ("if" expr-bool "then" expresion ("[" "else" expresion "]")"end") condicional-exp)
   (expresion ("while" expr-bool "do" expresion "done") while-exp)
   (expresion ("for" identificador "=" expresion (or "to" "downto") expresion "do" expresion "done") for-exp)
-  (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc") proc-exp)
-  (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval") app-exp)
+  (expresion ("def" "(" (separated-list identificador ",") ")" "{" expresion "}") def-exp)
+  (expresion ("eval" expresion "(" (separated-list expresion ",") ")") app-exp)
   (expresion ("(" expresion primitiva-bin expresion ")") primapp-bin-exp)
   (expresion (primitiva-un "(" expresion ")") primapp-un-exp)
-  (expresion ("declarar" "(" (separated-list identificador "=" expresion ";") ")" "{" expresion "}" ) variableLocal-exp)
+  (expresion ("def-rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) defrec-exp)
 
 ;; Integers
   (primitiva-bin ("+") primitiva-suma)
