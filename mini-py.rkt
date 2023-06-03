@@ -1,8 +1,8 @@
 #lang eopl
 
-;; Solución proyecto final - Fundamentos de lenguajes de programación
-;; Viernes, 9 de junio de 2023
-;; Hecho por:
+;; Final project solution - Fundamentos de lenguajes de programación
+;; Friday June 9, 2023
+;; Made by:
 ;; Janiert Sebastián Salas - 1941265
 ;; Jhon Alexander Valencia - 2042426
 ;; Diego Fernando Victoria - 2125877
@@ -17,7 +17,6 @@
     (numero ("-" digit (arbno digit)) number)
     (numero (digit (arbno digit) "." digit (arbno digit)) number)
     (numero ("-" digit (arbno digit) "." digit (arbno digit)) number)
-    (bool (or "@true" "@false") boolean)
     (texto (letter (arbno (or letter ":" "?" "=" "'" "&" "." "," ";" "*" "!" "¡" "¿" "-" "_"))) string)))
 
 ;; Grammar of the language, which describes the rules of the language, used to define the terminal symbols, non-terminal symbols, and production rules.
@@ -29,14 +28,24 @@
   ;; Body
   (cuerpo (expresion (arbno expresion)) cuerpoc)
 
-  ;; Expressions
+  ;; EXPRESSIONS
+  
+  ;; Identifier
   (expresion (identificador) var-exp)
+
+  ;; Definitions
   (expresion ("var" (arbno identificador "=" (expresion))"," "in" expresion ";") varLet-exp)
   (expresion ("const" (arbno identificador "=" (expresion))"," "in" expresion ";") const-exp)
   (expresion ("rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) rec-exp)
+
+  ;; Data
   (expresion (numero) numero-lit)
   (expresion ("\"" texto "\"") cadena-lit)
   (expresion (bool) bool-lit)
+  (bool ("true") true-exp)
+  (bool ("false") false-exp)
+
+  ;; Data constructors
   (expresion ("[" (separated-list expresion ";") "]") list-exp)
   (expresion ("tupla" "[" (separated-list expresion ";") "]") tupla-exp)
   (expresion ("{" (identificador "=" expresion (arbno ";" identificador "=" expresion)) "}") registro-exp)
@@ -44,15 +53,21 @@
   (expr-bool (oper-bin-bool "(" expr-bool "," expr-bool ")") oper-bin-exp)
   (expr-bool (bool) bool-exp)
   (expr-bool (oper-un-bool "(" expr-bool ")" ) oper-un-exp)
+
+  ;; Control structure
   (expression ("begin" expresion (arbno ";" expression) "end") begin-exp)
   (expresion ("if" expr-bool "then" expresion ("[" "else" expresion "]")"end") condicional-exp)
   (expresion ("while" expr-bool "do" expresion "done") while-exp)
   (expresion ("for" identificador "=" expresion (or "to" "downto") expresion "do" expresion "done") for-exp)
+
+  ;; Others
   (expresion ("def" "(" (separated-list identificador ",") ")" "{" expresion "}") def-exp)
   (expresion ("eval" expresion "(" (separated-list expresion ",") ")") app-exp)
   (expresion ("(" expresion primitiva-bin expresion ")") primapp-bin-exp)
   (expresion (primitiva-un "(" expresion ")") primapp-un-exp)
   (expresion ("def-rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) defrec-exp)
+
+;; UNARY AND BINARY PRIMITIVES
 
 ;; Integers
   (primitiva-bin ("+") primitiva-suma)
@@ -76,6 +91,7 @@
   (pred-prim ("<=") menor_igual)
   (pred-prim (">=") mayor_igual)
   (pred-prim ("==") igual)
+  (pred-prim ("<>") mayorNomenor)
   (oper-bin-bool ("and") and-op)
   (oper-bin-bool ("or") or-op)
   (oper-un-bool ("not") not)
@@ -106,7 +122,7 @@
   (primitiva-bin ("ref-resgistro") primitiva-refRegistro)
   (primitiva-bin ("set-registro") primitiva-setRegistro))
 
-;; Interpreter
+;; INTERPRETER
 
 ;; Data types for the abstract syntax of the grammar built automatically:
 (sllgen:make-define-datatypes especificacion-lexica gramatica)
@@ -126,7 +142,7 @@
 ;; The Interpreter (Frontend + Evaluation + Signal for reading)
 (define interpretador
   (sllgen:make-rep-loop "--> "
-    (lambda (programa) (evaluar-programa  programa))
+    (lambda (programa) (evaluar-programa programa))
     (sllgen:make-stream-parser 
       especificacion-lexica
       gramatica)))
