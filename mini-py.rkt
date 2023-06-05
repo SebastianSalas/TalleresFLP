@@ -34,8 +34,8 @@
   (expresion ("\"" texto "\"") texto-lit)
   (expresion (identificador) id-exp)
   (expresion (boolean) expr-bool)
-  (expresion ("(" expresion primitiva-bin expresion ")") primapp-bin-exp)
-  (expresion (primitiva-un "(" expresion ")") primapp-un-exp)
+  (expresion ("(" expresion primitiva-bin-entero expresion ")") primapp-bin-exp)
+  (expresion (primitiva-un-entero "(" expresion ")") primapp-un-exp)
   (expresion ("declarar" "(" (separated-list identificador "=" expresion ";") ")" "{" expresion "}" ) variableLocal-exp)
   (expresion ("if" expresion "then" expresion "[" "else" expresion "]" "end") condicional-exp)
   (expresion ("def" "(" (separated-list identificador ",") ")" "{" expresion "}") proc-exp)
@@ -48,6 +48,7 @@
   (expresion (prim-lista "(" (separated-list expresion ",") ")") lista-exp)
   (expresion ("set-lista(" expresion "," expresion "," expresion ")") set-list)
   (expresion ("ref-lista(" expresion "," expresion ")") ref-list)
+  (expresion (prim-string) string-exp)
   (boolean (bool) trueFalse-exp)
   (expresion (pred-prim "(" expresion "," expresion ")") comparacion-exp)
   (boolean (oper-bin-bool "(" boolean "," boolean ")") op-log-exp)
@@ -82,16 +83,19 @@
   (prim-lista ("lista?") list?-prim)
 
   ;; 
-  (primitiva-bin ("+") primitiva-suma)
-  (primitiva-bin ("~") primitiva-resta)
-  (primitiva-bin ("/") primitiva-div)
-  (primitiva-bin ("*") primitiva-multi)
-  (primitiva-bin ("concat") primitiva-concat)
+  (primitiva-bin-entero ("+") primitiva-suma)
+  (primitiva-bin-entero ("-") primitiva-resta)
+  (primitiva-bin-entero ("/") primitiva-div)
+  (primitiva-bin-entero ("*") primitiva-multi)
+  (primitiva-bin-entero ("%") primitiva-mod)
 
-  ;; 
-  (primitiva-un ("longitud") primitiva-longitud)
-  (primitiva-un ("add1") primitiva-add1)
-  (primitiva-un ("sub1") primitiva-sub1)))
+  ;;
+  (primitiva-un-entero ("++") primitiva-add1)
+  (primitiva-un-entero ("--") primitiva-sub1)
+
+  ;; Strings
+  (prim-string ("concat" "(" expresion "," expresion ")") concat-exp)
+  (prim-string ("longitud" "(" expresion ")") longitud-exp)))
 
 ;; INTERPRETER
 
@@ -215,6 +219,11 @@
       (comparacion-exp ( prim exp1 exp2)
                       (apply-comparacion-exp prim exp1 exp2  amb))
       
+      (string-exp (exp)
+                  (cases prim-string exp
+                    (concat-exp (exp1 exp2) (string-append (evaluar-expresion exp1 amb ) (evaluar-expresion exp2 amb )))
+                    (longitud-exp (exp) (string-length (evaluar-expresion exp amb )))))
+
       )))
 
 ;; Eval-bool: evaluates all types of booleans in the program
@@ -366,18 +375,18 @@
 ;; Makes the application specification of the binary primitives
 (define apply-prim-bin
   (lambda (exp1 prim exp2 amb)
-    (cases primitiva-bin prim
+    (cases primitiva-bin-entero prim
       (primitiva-suma () (+ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-resta () (- (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-multi () (* (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (primitiva-div () (/ (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
-      (primitiva-concat () (string-append (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))
+      (primitiva-mod () (modulo (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      )))
 
 ;; Makes the application specification of the unary primitives
 (define apply-prim-un
   (lambda (prim arg amb)
-    (cases primitiva-un prim
-      (primitiva-longitud () (string-length(evaluar-expresion arg amb)))
+    (cases primitiva-un-entero prim
       (primitiva-add1 () (+ (evaluar-expresion arg amb ) 1))
       (primitiva-sub1 () (- (evaluar-expresion arg amb ) 1)))))
 
