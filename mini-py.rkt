@@ -41,6 +41,8 @@
   (expresion ("def" "(" (separated-list identificador ",") ")" "{" expresion "}") proc-exp)
   (expresion ("eval" expresion "[" (separated-list expresion ",") "]") app-exp)
   (expresion ("def-rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) defrec-exp)
+  (expresion ("while" boolean  "do" expresion "done") while-exp)
+  (expresion ("for" identificador "=" expresion "to"  expresion "do" expresion "done") for-exp)
   (expresion ("begin" expresion (arbno ";" expresion) "end") begin-exp)
   (expresion ("set" identificador "=" expresion) set-exp)
   (expresion ("var" (arbno identificador "=" expresion)"," "in" expresion ";") var-exp)
@@ -51,8 +53,9 @@
   (expresion (primitiv-tupla "tupla" "[" (separated-list expresion ";") "]") tupla-exp)
   (expresion ("ref-tuple(" expresion "," expresion ")") ref-tupla)
   (expresion (prim-string) string-exp)
+  
   (boolean (bool) trueFalse-exp)
-  (expresion (pred-prim "(" expresion "," expresion ")") comparacion-exp)
+  (boolean (pred-prim "(" expresion "," expresion ")") comparacion-exp)
   (boolean (oper-bin-bool "(" boolean "," boolean ")") op-log-exp)
   (boolean (oper-un-bool "(" boolean ")")  oper-un-bool-exp)
   (bool ("True") true-exp)
@@ -234,13 +237,22 @@
 
       (expr-bool (bool) (eval-bool bool amb))
 
-      (comparacion-exp ( prim exp1 exp2)
-                      (apply-comparacion-exp prim exp1 exp2  amb))
       
       (string-exp (exp)
                   (cases prim-string exp
                     (concat-exp (exp1 exp2) (string-append (evaluar-expresion exp1 amb ) (evaluar-expresion exp2 amb )))
                     (longitud-exp (exp) (string-length (evaluar-expresion exp amb )))))
+      (while-exp (exp-bool body)
+                 (eval-while-exp exp-bool body amb ))
+      
+      (for-exp ( ids desde hasta cuerpo)
+         (let
+             ((to (evaluar-expresion desde amb))
+                   (downto (evaluar-expresion hasta amb)))
+            (let   loop ((i to))
+                   (when (< i downto)
+                      (evaluar-expresion cuerpo (extend-amb (list ids) (list i) amb))
+                      (loop (+ 1 i))))))
 
       )))
 
@@ -253,9 +265,25 @@
                   (apply-oplog-exp op-log bool1 bool2 amb ))
       (oper-un-bool-exp (un prim)
                         (apply-un-exp un (eval-bool prim amb)))
+      (comparacion-exp ( prim exp1 exp2)
+                      (apply-comparacion-exp prim exp1 exp2  amb))
       )
     )
   )
+
+;------------Eval-while --------------------------
+(define eval-while-exp
+  (lambda (exp-bool body amb )
+      (let
+          ((condicion (evaluar-expresion (expr-bool exp-bool) amb )))
+
+        (if condicion
+            (begin
+              (evaluar-expresion body amb )
+              (eval-while-exp expr-bool body amb ))
+            1))))
+
+
 
 ;; LISTS
 ;funcion auxiliar para obtener elemento en una posicion de una lista
