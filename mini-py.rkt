@@ -99,7 +99,7 @@
   (primitiv-tupla ("tcabeza") primitiva-tcabeza)
   (primitiv-tupla ("tcola") primitiva-tcola)
 
-  ;;
+  ;; Tuples primitives
   (prim-registro ( "crear-registro" "{" (separated-list identificador "=" expresion ",") "}") primitiva-crearRegistro)
   (prim-registro ("registro?" "(" expresion ")") primitiva-registro?)
   (prim-registro ("ref-registro" "(" expresion "," identificador")") primitiva-refRegistro)
@@ -203,6 +203,7 @@
       (ref-tupla (tupla pos)
                  (let ((tupla (evaluar-expresion tupla amb)))
                    (get-position-list tupla (evaluar-expresion pos amb))))
+
       (reg-exp (objeto) (eval-registro objeto amb))
 
       (variableLocal-exp (ids exps cuerpo)
@@ -211,7 +212,7 @@
                            (extend-amb ids args amb))))
 
       (condicional-exp (test-exp true-exp false-exp)
-                        (if (valor-verdad? (evaluar-expresion test-exp amb))
+                        (if (evaluar-expresion test-exp amb)
                             (evaluar-expresion true-exp amb)
                             (evaluar-expresion false-exp amb)))
 
@@ -238,21 +239,22 @@
 
       (const-exp (ids rands body)
                  (begin
-                   (eval-rands rands)
-                   (cases expresion body
-                     (set-exp (id exp) (eopl:error 'evaluar-expresion
-                                 "No es posible modificar una constante" ))                     
-                     (else (let ((args (eval-let-exp-rands rands amb)))
-                         (evaluar-expresion body (extend-amb ids args amb))))
-                   ))
+                   (set! lista-constantes (append lista-constantes ids))
+                   (let ((args (eval-let-exp-rands rands amb)))
+                     (evaluar-expresion body (extend-amb ids args amb)))
+                   )
                )
 
       (set-exp (id rhs-exp)
                (begin
-                 (setref!
+                 (cond
+                   [(buscar-elemento lista-constantes id) (eopl:error 'evaluar-expresion
+                                 "No es posible modificar una constante" )]
+                   [else (setref!
                   (apply-env-ref amb id)
-                  (evaluar-expresion rhs-exp amb))
-                 0))
+                  (evaluar-expresion rhs-exp amb))])
+                  1
+                 ))
 
       (begin-exp (exp exps)
                  (let loop ((acc (evaluar-expresion exp amb))
@@ -264,7 +266,6 @@
                               (cdr exps)))))
 
       (expr-bool (bool) (eval-bool bool amb))
-
       
       (string-exp (exp)
                   (cases prim-string exp
@@ -469,6 +470,16 @@
       (primitiva-add1 () (+ (evaluar-expresion arg amb ) 1))
       (primitiva-sub1 () (- (evaluar-expresion arg amb ) 1)))))
 
+(define lista-constantes '())
+
+(define buscar-elemento
+  (lambda (lista elemento)
+    (cond
+      [(null? lista) #f]
+      [else
+       (if(eqv? (car lista) elemento) #t
+          (buscar-elemento (cdr lista) elemento))])))
+
 ;; BIGNUM
 
 (define get-Bignum-estruct
@@ -591,8 +602,8 @@
   (lambda (prim-tupla args)
     (cases primitiv-tupla prim-tupla
       (primitiva-crear-tupla () args)
-      (primitiva-?tupla () (pair? args))
-      (primitiva-tvacio () ("tupla[]"))
+      (primitiva-?tupla () (if(null? args) #t (pair? args)))
+      (primitiva-tvacio () "tupla[]")
       (primitiva-?tvacio () (if (null? args) #t #f))
       (primitiva-tcabeza () (car args))
       (primitiva-tcola () (cdr args))
@@ -609,12 +620,12 @@
                   (if (list? registro)
                       (and (vector? (car registro)) (vector? (cadr registro )))
                       #f))]
+
       [primitiva-refRegistro (registro key) (buscar-key key (car (evaluar-expresion registro amb)) (cadr (evaluar-expresion registro amb)) amb)]
 
       [primitiva-setRegistro (rgstr name value) (let ((array (evaluar-expresion rgstr amb))
                                        (newitem (evaluar-expresion value amb)))
-                                   (vector-set! (cadr array) (- (length (member name (reverse (vector->list (car array))))) 1) newitem))]
-
+                                   (vector-set! (cadr array) (- (length (member name (reverse (vector->list (car array))))) 1) newitem))]      
     )))
 
 (define buscar-key
@@ -725,7 +736,3 @@
     (let loop ((next 0))
       (if (>= next end) '()
         (cons next (loop (+ 1 next)))))))
-
-(define valor-verdad?
-  (lambda (x)
-    (not (zero? x))))
