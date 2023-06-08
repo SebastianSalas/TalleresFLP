@@ -33,6 +33,8 @@
   (expresion (numero) numero-lit)
   (expresion ("mostrar") mostrar-exp)
   (expresion ("\"" texto "\"") texto-lit)
+  (expresion (printf) printf-exp)
+  (printf ("printf" "(" expresion ")") printf-def)
   (expresion (identificador) id-exp)
   (expresion (boolean) expr-bool)
   (expresion (crea-bignum "(" (arbno numero) ")") bignum-exp)
@@ -44,11 +46,11 @@
   (expresion ("eval" expresion "[" (separated-list expresion ",") "]") app-exp)
   (expresion ("def-rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) defrec-exp)
   (expresion ("while" boolean  "do" expresion "done") while-exp)
-  (expresion ("for" identificador "=" expresion "to"  expresion "do" expresion "done") for-exp)
+  (expresion ("for" identificador "=" expresion "to" expresion "do" expresion "done") for-exp)
   (expresion ("begin" expresion (arbno ";" expresion) "end") begin-exp)
   (expresion ("set" identificador "=" expresion) set-exp)
-  (expresion ("var" (arbno identificador "=" expresion)"," "in" expresion ";") var-exp)
-  (expresion ("const" (arbno identificador "=" expresion)"," "in" expresion ";")const-exp)
+  (expresion ("var" (separated-list identificador "=" expresion ",") "in" expresion ";") var-exp)
+  (expresion ("const" (separated-list identificador "=" expresion ",") "in" expresion ";")const-exp)
   (expresion (prim-lista "(" (separated-list expresion ",") ")") lista-exp)
   (expresion ("set-lista(" expresion "," expresion "," expresion ")") set-list)
   (expresion ("ref-lista(" expresion "," expresion ")") ref-list)
@@ -209,6 +211,8 @@
 
       (texto-lit (texto) texto)
 
+      (printf-exp (message) (eval-printf message amb))
+
       (primapp-bin-exp (exp1 prim exp2)
                    (apply-prim-bin  exp1 prim exp2 amb))
 
@@ -301,22 +305,25 @@
                                                amb)
                               (cdr exps)))))
 
-      (expr-bool (bool) (eval-bool bool amb))
+      (expr-bool (boolean) (eval-bool boolean amb))
       
       (string-exp (exp)
                   (cases prim-string exp
                     (concat-exp (exp1 exp2) (string-append (evaluar-expresion exp1 amb ) (evaluar-expresion exp2 amb )))
                     (longitud-exp (exp) (string-length (evaluar-expresion exp amb )))))
-      (while-exp (exp-bool body)
-                 (eval-while-exp exp-bool body amb ))
+       (while-exp (boolean exp)
+                  (let   loop ((i 0))
+                   (when (eval-bool boolean amb)
+                      (evaluar-expresion exp amb)
+                      (loop (+ 1 i)))))
       
-      (for-exp ( ids desde hasta cuerpo)
+      for-exp ( exp desde hasta cuerpo)
          (let
-             ((to (evaluar-expresion desde amb))
-                   (downto (evaluar-expresion hasta amb)))
-            (let   loop ((i to))
-                   (when (< i downto)
-                      (evaluar-expresion cuerpo (extend-amb (list ids) (list i) amb))
+             ((de (evaluar-expresion desde amb))
+                   (to (evaluar-expresion hasta amb)))
+           (let   loop ((i de))
+              (when (< i to)
+                      (evaluar-expresion cuerpo (extend-amb (list exp) (list i) amb))
                       (loop (+ 1 i))))))
 
       (new-object-exp (class-name rands)
@@ -355,17 +362,10 @@
     )
   )
 
-;------------Eval-while --------------------------
-(define eval-while-exp
-  (lambda (exp-bool body amb )
-      (let
-          ((condicion (evaluar-expresion (expr-bool exp-bool) amb )))
-
-        (if condicion
-            (begin
-              (evaluar-expresion body amb )
-              (eval-while-exp expr-bool body amb ))
-            1))))
+(define eval-printf
+  (lambda (msg amb)
+    (cases printf msg
+      (printf-def (message) (display (evaluar-expresion message amb))))))
 
 
 
@@ -600,10 +600,10 @@
 (define apply-comparacion-exp
   (lambda (prim exp1 exp2 amb)
     (cases pred-prim prim
-      (menor-bool () (<= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
-      (mayor-bool () (>= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
-      (menorIgual-bool () (< (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
-      (mayorIgual-bool () (> (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (menor-bool () (< (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (mayor-bool () (> (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (menorIgual-bool () (<= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
+      (mayorIgual-bool () (>= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb)))
       (noIgual-bool () (not (= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))
       (igual-bool () (= (evaluar-expresion exp1 amb) (evaluar-expresion exp2 amb))))))
 
