@@ -137,7 +137,7 @@
   
   (class-decl                         
       ("class" identificador 
-        "extends" identificador                   
+        "extends" identificador
          (arbno "field" identificador)
          (arbno method-decl)
          )
@@ -317,7 +317,7 @@
                       (evaluar-expresion exp amb)
                       (loop (+ 1 i)))))
       
-      for-exp ( exp desde hasta cuerpo)
+      (for-exp ( exp desde hasta cuerpo)
          (let
              ((de (evaluar-expresion desde amb))
                    (to (evaluar-expresion hasta amb)))
@@ -341,7 +341,7 @@
 
       (super-call-exp (method-name rands)
         (let ((args (eval-rands rands amb))
-              (obj (apply-env amb 'self)))
+              (obj (apply-env amb '$self)))
           (find-method-and-apply
             method-name (apply-env amb '%super) obj args)))
 
@@ -398,7 +398,8 @@
 ;; REFERENCES:
 (define expval?
   (lambda (x)
-    (or (number? x) (procval? x) (list? x) (object? x))))
+    (or (number? x) (procval? x) (list? x) (object? x)
+        (string? x) (vector? x) (pair? x))))
 
 (define ref-to-direct-target?
   (lambda (x)
@@ -586,7 +587,7 @@
 (define multi-bignum
   (lambda (x y exp)
     (if (null? x)
-        ('())
+        x
         (suma-bignum (multi-bignum (predecessor x exp) y exp) y exp))
     ))
 
@@ -840,7 +841,7 @@
           (fields (object->fields self)))
       (evaluar-expresion body
         (extend-amb
-          (cons '%super (cons 'self ids))
+          (cons '%super (cons '$self ids))
           (cons super-name (cons self args))
           (extend-env-refs field-ids fields (empty-amb)))))))
 
