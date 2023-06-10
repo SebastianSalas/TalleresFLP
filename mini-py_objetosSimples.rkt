@@ -32,9 +32,11 @@
   
   (expresion (numero) numero-lit)
   (expresion ("mostrar") mostrar-exp)
+  (expresion (letter) letter-lit)
   (expresion ("\"" texto "\"") texto-lit)
   (expresion (printf) printf-exp)
   (printf ("printf" "(" expresion ")") printf-def)
+  (expresion ("printObj" "(" expresion ")") printPbj-exp)
   (expresion (identificador) id-exp)
   (expresion (boolean) expr-bool)
   (expresion (crea-bignum "(" (arbno numero) ")") bignum-exp)
@@ -44,7 +46,7 @@
   (expresion ("if" expresion "then" expresion "[" "else" expresion "]" "end") condicional-exp)
   (expresion ("def" "(" (separated-list identificador ",") ")" "{" expresion "}") proc-exp)
   (expresion ("eval" expresion "[" (separated-list expresion ",") "]") app-exp)
-  (expresion ("def-rec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) defrec-exp)
+  (expresion ("def-rec" (separated-list identificador "(" (separated-list identificador ",") ")" "=" expresion ",")  "in" expresion) defrec-exp)
   (expresion ("while" boolean  "do" expresion "done") while-exp)
   (expresion ("for" identificador "=" expresion "to" expresion "do" expresion "done") for-exp)
   (expresion ("begin" expresion (arbno ";" expresion) "end") begin-exp)
@@ -94,6 +96,7 @@
   (prim-lista ("cola")  cdr-prim)
   (prim-lista ("vacio?") null?-prim)
   (prim-lista ("lista?") list?-prim)
+  (prim-lista ("tamano") tamano-prim)
 
   ;; Tuples
   (primitiv-tupla ("crear-tupla") primitiva-crear-tupla)
@@ -209,6 +212,8 @@
 
       (id-exp (id) (apply-env amb id))
 
+      (letter-lit (letra) letra)
+      
       (texto-lit (texto) texto)
 
       (printf-exp (message) (eval-printf message amb))
@@ -322,7 +327,7 @@
              ((de (evaluar-expresion desde amb))
                    (to (evaluar-expresion hasta amb)))
            (let   loop ((i de))
-              (when (< i to)
+              (when (<= i to)
                       (evaluar-expresion cuerpo (extend-amb (list exp) (list i) amb))
                       (loop (+ 1 i))))))
 
@@ -344,6 +349,7 @@
               (obj (apply-env amb '$self)))
           (find-method-and-apply
             method-name (apply-env amb '%super) obj args)))
+      (printPbj-exp (obj) (print-objeto (evaluar-expresion obj amb)))
 
       )))
 
@@ -476,14 +482,15 @@
 (define eval-exp
   (lambda (rand env)
     (cases expresion rand
-      (id-exp (id)
+      (lista-exp (prim id)
                (indirect-target
                 (let ((ref (apply-env-ref env id)))
                   (cases target (primitive-deref ref)
                     (direct-target (expval) ref)
                     (indirect-target (ref1) ref1)))))
       (else
-       (direct-target (evaluar-expresion rand env))))))
+       (direct-target (evaluar-expresion rand env)))))
+  )
 
 (define eval-primapp-exp-rands
   (lambda (rands env)
@@ -749,7 +756,22 @@
    (cuerpo expresion?)
    (amb ambiente?)))
 
-;; 
+;;
+
+;;SIMPLE OBJECTS
+
+(define print-objeto
+  (lambda (value)
+    (map
+     (lambda (x)
+       (cases part x
+         (a-part (class-name fields) fields)
+        ) 
+     )
+       value )
+
+   )
+)
 
 (define aux
    (lambda (x)
