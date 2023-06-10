@@ -651,6 +651,7 @@
       (cons-prim () (cons (car args) (cons (cadr args) '())))
       (null?-prim () (if (null? (car args)) #true #false))
       (list?-prim () (list? (car args)))
+      (tamano-prim () (length (car args)))
       )))
 
 ;; Tuples
@@ -748,6 +749,14 @@
                                  (a-ref pos vals)
                                  (apply-env-ref env sym)))))))
 
+(define rib-find-position 
+  (lambda (sym los)
+    (list-find-position sym los)))
+
+(define list-find-position
+  (lambda (sym los)
+    (list-index (lambda (sym1) (eqv? sym1 sym)) los)))
+
 ;; PROCEDURES
 
 (define-datatype procval procval?
@@ -817,7 +826,7 @@
       (view-object-as (cdr parts) class-name))))
 
 (define apply-method
-  (lambda (method host-name self args)
+  (lambda (m-decl host-name self args)
     (let ((ids (method-decl->ids m-decl))
           (body (method-decl->body m-decl))
           (super-name (class-name->super-name host-name)))
