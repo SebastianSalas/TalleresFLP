@@ -7,6 +7,8 @@
 ;; Jhon Alexander Valencia - 2042426
 ;; Diego Fernando Victoria - 2125877
 
+;; Github link: https://github.com/SebastianSalas/TalleresFLP
+
 ;; Performs the lexical specification, which refers the way in wich the program is divided into lexical units
 (define especificacion-lexica
   '((espacio-blanco (whitespace) skip)
